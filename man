@@ -1,0 +1,12 @@
+git add .
+git commit -m ""
+git push origin branchname
+
+switch to new branch
+
+git checkout - b branchname
+EG: git checkout -b feature/naive-bayes-model
+
+then git push origin feature/naive-bayes-model
+
+all done!
