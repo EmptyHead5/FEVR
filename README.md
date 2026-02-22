@@ -47,14 +47,9 @@ This represents the daily percentage price change.
 
 ### 2️⃣ Direction Label (Target Variable)
 
-\[
-Direction_t =
-\begin{cases}
-1 & \text{if } Return_t > 0 \\
-0 & \text{otherwise}
-\end{cases}
-\]
+`Direction_t = 1 if Return_t > 0`
 
+`Direction_t = 0 if Return_t < 0`
 - `1` → Up day  
 - `0` → Down day  
 
@@ -62,9 +57,7 @@ Direction_t =
 
 ### 3️⃣ Lagged Feature
 
-\[
-LastReturn_t = Return_{t-1}
-\]
+`LastReturn_t = Return_{t-1}`
 
 The model uses yesterday’s return to predict today’s direction.
 
