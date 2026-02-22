@@ -5,7 +5,7 @@ git push origin branchname
 switch to new branch
 
 git checkout - b branchname
-EG: git checkout -b feature/naive-bayes-model
+EG: git checkout -b feature/bayesian-plan
 
 then git push origin feature/naive-bayes-model
 
