@@ -37,9 +37,9 @@ To transform raw market data into a supervised learning problem, we define:
 
 ### 1️⃣ Daily Return
 
-\[
-Return_t = \frac{Close_t - Close_{t-1}}{Close_{t-1}}
-\]
+`Return_t = (Close_t - Close_{t-1}) / Close_{t-1}`
+
+This measures the percentage change in closing price from the previous trading day.
 
 This represents the daily percentage price change.
 
