@@ -1,8 +1,6 @@
 import yfinance as yf
 import pandas as pd
 import numpy as np
-import datetime
-import zoneinfo
 from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
@@ -13,14 +11,6 @@ from sklearn.metrics import accuracy_score
 #  dividend information, and stock splits to build foundational datasets.
 
 
-def lodaData():    
-    nowPhiox = datetime.datetime.now(zoneinfo.ZoneInfo("America/Phoenix"))
-    print("Today's date:", nowPhiox)
-    data = yf.download("SPY", start="2015-01-01", end=nowPhiox)
-    print(data.head(), "\n")
-    print("Total trading days:", len(data))
-    
-    return data
 
 def extractDaysData(data, start, end):
     return data.loc[start:end]
@@ -63,14 +53,3 @@ def train_model(data):
     print("Row accuracy:", acc)
     print(f"Accuracy: {acc*100:.2f}%")
 
-if __name__ == "__main__":
-    data = lodaData()
-    #close -- open price
-    #high -- the highest price during the day
-    #low -- the lowest price during the day
-    #open -- the price at which the stock opened
-    #volume -- the number of shares traded during the day
-
-    #print("2026-02-18 data:", extractDaysData(data, "2026-02-18", "2026-02-18"))
-    data = feature_engineering(data)
-    train_model(data)
