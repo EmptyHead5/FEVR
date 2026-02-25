@@ -1,12 +1,12 @@
 Bayes-Model-Trader Updates
-2026-02-25
+##2026-02-25
 
-Restructured project into modular components
+- Restructured project into modular components
 
-Added main.py as entry point
+- Added main.py as entry point
 
-Implemented Gaussian Naive Bayes baseline model
+- Implemented Gaussian Naive Bayes baseline model
 
-Added optional EMA and SMA smoothing functions
+- Added optional EMA and SMA smoothing functions
 
-This version establishes a simple experimental baseline for SPY direction prediction.
+- This version establishes a simple experimental baseline for SPY direction prediction.
