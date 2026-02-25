@@ -1,5 +1,6 @@
 Bayes-Model-Trader Updates
-##2026-02-25
+
+## 2026-02-25
 
 - Restructured project into modular components
 
