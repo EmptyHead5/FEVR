@@ -18,7 +18,6 @@ Sharpe Ratio
 
 Maximum Drawdown
 
-By shifting focus from prediction accuracy to economic significance, this project bridges machine learning and quantitative trading.
 
 ---
 
