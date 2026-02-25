@@ -1,3 +1,0 @@
-unset GITHUB_TOKEN
-git config --global credential.helper store
-git push origin feature/bayesian-plan
