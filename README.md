@@ -1,7 +1,23 @@
 # Bayes-Model-Trader
 
-A machine learning model inspired by Bayesian statistics to predict the market direction of SPY (S&P 500 ETF).
+Financial markets are highly noisy, complex, and influenced by countless interacting factors.
+Precisely predicting future price movements is extremely difficult due to randomness, volatility clustering, and market efficiency.
 
+Instead of attempting to forecast exact future prices, this project focuses on predicting the probable direction of market movement with measurable confidence.
+
+The goal is not merely to improve classification accuracy, but to translate probabilistic directional signals into a systematic trading strategy.
+
+Ultimately, the model aims to provide actionable signals that can be evaluated through real performance metrics such as:
+
+Strategy Return
+
+Market Return
+
+Sharpe Ratio
+
+Maximum Drawdown
+
+By shifting focus from prediction accuracy to economic significance, this project bridges machine learning and quantitative trading.
 ---
 
 ## 📌 Project Overview
