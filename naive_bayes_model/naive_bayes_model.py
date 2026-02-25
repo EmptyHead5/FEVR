@@ -36,8 +36,9 @@ def feature_engineering(data):
     return data
 
 def train_model(data):
-    X=data[["last_return"]]
-    #using only the "last_return" feature as the input for our Naive Bayes model. 
+    data = data.dropna()
+    X = data[["last_return"]]
+    #nput for our Naive Bayes model. 
     # This means that the model will learn to predict the direction of the stock price movement based solely on the return from the previous day.
     y = data["Direction"]
 
@@ -47,9 +48,13 @@ def train_model(data):
 
     model = GaussianNB()
     model.fit(X_train, y_train)
-
+    print(len(y_test))
     predictions = model.predict(X_test)
     acc = accuracy_score(y_test, predictions)
-    print("Row accuracy:", acc)
     print(f"Accuracy: {acc*100:.2f}%")
 
+    probabilities = model.predict_proba(X_test)
+    print("First 5 probability outputs:")
+    print(probabilities[:5])
+
+    print("Test baseline:", y_test.mean())

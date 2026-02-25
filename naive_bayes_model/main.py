@@ -16,4 +16,13 @@ if __name__ == "__main__":
 
     #print("2026-02-18 data:", extractDaysData(data, "2026-02-18", "2026-02-18"))
     data = naive_bayes_model.feature_engineering(data)
+    #data = noiseReduction.EMA(data, alpha=0.1)
+    #data = noiseReduction.SMA(data, window=5)
     naive_bayes_model.train_model(data)
+
+
+    print("Mean last_return when market UP:",
+      data[data["Direction"]==1]["last_return"].mean())
+
+    print("Mean last_return when market DOWN:",
+        data[data["Direction"]==0]["last_return"].mean())
