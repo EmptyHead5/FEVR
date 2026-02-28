@@ -31,7 +31,23 @@ This project explores whether simple Bayesian-inspired statistical models can ca
 We begin with a Gaussian Naive Bayes classifier as a baseline probabilistic model.
 
 ---
+## Data Mining
 
+Historical daily SPY (S&P 500 ETF) data is retrieved using the yfinance library:
+
+Open
+
+High
+
+Low
+
+Close
+
+Volume
+
+---
+
+The dataset spans from 2015 to present and is used to construct a supervised learning problem.
 ## 📊 Data Source
 
 Historical daily SPY price data is retrieved using the `yfinance` library from Yahoo Finance.
