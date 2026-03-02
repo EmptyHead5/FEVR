@@ -146,7 +146,8 @@ This suggests the presence of weak short-term momentum effects in SPY.
 - yfinance  
 - pandas  
 - numpy  
-- scikit-learn  
+- scikit-learn
+- matplotlib  
 
 Install with:
 
