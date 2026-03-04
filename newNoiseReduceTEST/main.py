@@ -1,29 +1,40 @@
 import yfinance as yf
 import noiseReduction
-import naive_bayes_model
+import trainingModel 
+import visualization 
+import dataLoad
+import pandas as pd
 
-def load_data():
-    data = yf.download("SPY", start="2015-01-01")
-    return data
+
 
 if __name__ == "__main__":
-    data = load_data()
-    #close -- open price
-    #high -- the highest price during the day
-    #low -- the lowest price during the day
-    #open -- the price at which the stock opened
-    #volume -- the number of shares traded during the day
 
-    #print("2026-02-18 data:", extractDaysData(data, "2026-02-18", "2026-02-18"))
-    data = naive_bayes_model.feature_engineering(data)
-    #data = noiseReduction.EMA(data, alpha=0.1)
-    #data = noiseReduction.SMA(data, window=5)
-    naive_bayes_model.train_model(data)
+    data = dataLoad.loadAndCleanData()
+    data = dataLoad.extraDataSet(data)
 
-    y_true, y_pred = naive_bayes_model.walk_forward_validation(data)
+    visualization.closePricePlot(data)
 
-    acc = naive_bayes_model.accuracy_score(y_true, y_pred)
+    # Train XGBoost model
+    #trainingModel.XGBClassifierModel(data)
+    
+    # Random Forest baseline
+    
+    startDate = "2021-12-01"
+    data = trainingModel.forestClassifer(data)
+    data = trainingModel.backtest(data, startDate)
 
-    print("Walk-forward Accuracy:", acc)
-    print("Walk-forward Baseline:", y_true.mean())
+    print(data.head())
+ 
 
+
+    output = data.loc[startDate:,["Return", "Prediction", "Position", "Strategy_Equity", "Target"]]
+
+    output.to_csv("backtest.csv")
+
+    print("Saved to backtest.csv")
+    #Return is today's price change
+    #Targer is whether the price will go up tomorrow (1) or not (0)
+
+    print("Last date:", data.index.max())
+    print("Rows:", len(data))
+    print("Hash check:", data["Close"].sum())

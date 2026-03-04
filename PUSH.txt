@@ -1,0 +1,11 @@
+unset GITHUB_TOKEN
+gh auth login
+gh auth status
+
+git checkout feature/bayesian-plan
+
+git add newNoiseReduceTEST
+git add .
+git status
+git commit -m "add newNoiseReduceTEST folder"
+git push origin feature/bayesian-plan
