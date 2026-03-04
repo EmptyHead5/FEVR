@@ -1,5 +1,18 @@
-Bayes-Model-Trader (Test Version)
+Bayes-Model-Trader Updates
+2026-03-03
 
-This is a testing version of the project used to experiment with SPY stock prediction.
+Improved the backtesting system and visualization features
 
-It includes basic feature engineering, an XGBoost classifier, and walk-forward validation. The goal is to build a working pipeline before implementing more advanced Bayesian-based models.
+Added a backtesting module with equity curve tracking
+
+Added Sharpe ratio calculation to measure performance
+
+Enabled CSV export from a user-defined start date
+
+Added prediction and price plots
+
+Reorganized data loading, training, and visualization into separate modules
+
+Removed the old naive_bayes_model.py file
+
+This version improves how to test and evaluate the model’s trading performance.
