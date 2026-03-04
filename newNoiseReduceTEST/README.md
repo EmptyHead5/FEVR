@@ -1,18 +1,17 @@
-Bayes-Model-Trader Updates
-2026-03-03
+# Bayes-Model-Trader Updates
 
-Improved the backtesting system and visualization features
+## 2026-03-03
 
-Added a backtesting module with equity curve tracking
+### Improvements
 
-Added Sharpe ratio calculation to measure performance
+- Improved the backtesting system and visualization features
+- Added a backtesting module with equity curve tracking
+- Added Sharpe ratio calculation to measure performance
+- Enabled CSV export from a user-defined start date
+- Added prediction and price plots
+- Reorganized data loading, training, and visualization into separate modules
+- Removed the old `naive_bayes_model.py` file
 
-Enabled CSV export from a user-defined start date
-
-Added prediction and price plots
-
-Reorganized data loading, training, and visualization into separate modules
-
-Removed the old naive_bayes_model.py file
+### Summary
 
 This version improves how to test and evaluate the model’s trading performance.
