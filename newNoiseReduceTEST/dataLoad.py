@@ -1,5 +1,6 @@
 import yfinance as yf
 import pandas as pd
+import trainingModel    
 
 def loadAndCleanData():
     data = yf.Ticker("SPY")
@@ -20,3 +21,15 @@ def extraDataSet(data):
     # and "0" otherwise.
     return data
 
+
+def add_features(data):
+    data = data.copy()
+    data["Return_1D"] = data["Close"].pct_change()
+    data["Return_5D"] = data["Close"].pct_change(5)
+    data["SMA_10"] = data["Close"].rolling(10).mean()
+    data["SMA_20"] = data["Close"].rolling(20).mean()
+    data["SMA_Ratio"] = data["SMA_10"] / data["SMA_20"]
+    data["Volatility_20"] = data["Return_1D"].rolling(20).std()
+    data["Volume_Change"] = data["Volume"].pct_change()
+    data["RSI"] = trainingModel.calculateRSI(data["Close"])
+    return data

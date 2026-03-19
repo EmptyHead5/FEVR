@@ -3,13 +3,17 @@ import pandas as pd
 import numpy as np
 from xgboost import XGBClassifier
 import matplotlib.pyplot as plt
+import numpy as np
 
 import visualization
 
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import precision_score
+from sklearn.metrics import precision_score, recall_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+
+import pandas as pd
 
 
 
@@ -23,70 +27,136 @@ def extractDaysData(data, start, end):
     return data.loc[start:end]
 
 
-def XGBClassifierModel(data):
+def backtestBuyLowSellHigh(data, startDate,
+                        buy_rsi_threshold=40,
+                        sell_rsi_threshold=60,
+                        buy_price_window=20,
+                        sell_price_window=20):
 
-    X = data[["Close", "Volume", "Open", "High", "Low"]]
-    y = data["Target"]
+    data = data.dropna(subset=["Prediction"]).copy()
+    data = data.loc[startDate:].copy()
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, shuffle=False
-    )
+    data["Return"] = data["Close"].pct_change()
 
-    model = XGBClassifier(
-        n_estimators=200,
-        max_depth=3,
-        learning_rate=0.05,
-        subsample=0.8,
-        colsample_bytree=0.8,
-        eval_metric="logloss",
-        random_state=42
-    )
+    data["SMA_Buy"] = data["Close"].rolling(window=buy_price_window).mean()
+    data["SMA_Sell"] = data["Close"].rolling(window=sell_price_window).mean()
 
-    model.fit(X_train, y_train)
+    data["Position"] = 0
 
-    predictions = model.predict(X_test)
+    in_position = False
 
-    acc = accuracy_score(y_test, predictions)
-    baseline = precision_score(y_test, pd.Series(1, index=y_test.index))
-    print("Accuracy for XGBoost Classifier:", acc)
-    print("Baseline Precision (always up):", baseline)
-    
+    for i in range(len(data)):
+        row = data.iloc[i]
+
+        close_price = row["Close"]
+        prediction = row["Prediction"]
+        rsi = row["RSI"]
+        sma_buy = row["SMA_Buy"]
+        sma_sell = row["SMA_Sell"]
+
+        if pd.isna(sma_buy) or pd.isna(sma_sell) or pd.isna(rsi):
+            continue
+
+        buy_condition = (
+            prediction == 1 and
+            close_price < sma_buy and
+            rsi <= buy_rsi_threshold
+        )
+
+        sell_condition = (
+            prediction == 0 and
+            close_price > sma_sell and
+            rsi >= sell_rsi_threshold
+        )
+
+        if not in_position and buy_condition:
+            data.iloc[i, data.columns.get_loc("Position")] = 1
+            in_position = True
+
+        elif in_position and sell_condition:
+            data.iloc[i, data.columns.get_loc("Position")] = 0
+            in_position = False
+
+        else:
+            data.iloc[i, data.columns.get_loc("Position")] = 1 if in_position else 0
+
+    data["Strategy_Return"] = data["Position"].shift(1) * data["Return"]
+    data = data.dropna().copy()
+
+    sharpe = (
+        data["Strategy_Return"].mean() /
+        data["Strategy_Return"].std()
+    ) * (252 ** 0.5)
+
+    buy_hold_sharpe = (
+        data["Return"].mean() /
+        data["Return"].std()
+    ) * (252 ** 0.5)
 
 
-def forestClassifer(data):
 
-    model = RandomForestClassifier(n_estimators=100, min_samples_split=100, random_state=42)
-    #higer n_estimators means more trees in the forest, which can lead to better performance but also increases computational cost.
-    #but it have a limitation, if the number of trees is too high, it can lead to overfitting, where the model performs well on training data but poorly on unseen data.
+    initial_capital = 1
+    data["Strategy_Equity"] = initial_capital * (1 + data["Strategy_Return"]).cumprod()
+    data["BuyHold_Equity"] = initial_capital * (1 + data["Return"]).cumprod()
 
-    #if build tree too deep, it can lead to overfitting
-    #min_samples_split=100 means that a node must have at least 100 samples to be considered for splitting.
-    #this will help to protect aginst overfitting 
 
-    X = data[["Open","High","Low","Close","Volume"]]
-    y = data["Target"]
-
-    train_size = int(len(data) * 0.8)
-
-    X_train = X[:train_size]
-    X_test  = X[train_size:]
-
-    y_train = y[:train_size]
-    y_test  = y[train_size:]
-
-    
-    model.fit(X_train, y_train)
-
-    pred = model.predict(X_test)
-
-    print("Accuracy for Random Forest Classifier:",
-          accuracy_score(y_test, pred))
-
-    data.loc[X_test.index, "Prediction"] = pred
-    print("Prediction sum:", pred.sum())
 
     return data
 
+
+
+def calculateRSI(close_prices, period=14):
+    delta = close_prices.diff()
+    gains = delta.clip(lower=0)
+    losses = -delta.clip(upper=0)
+    avg_gain = gains.rolling(window=period).mean()
+    avg_loss = losses.rolling(window=period).mean()
+    rs = avg_gain / avg_loss
+    rsi = 100 - (100 / (1 + rs))
+    return rsi.fillna(50)
+
+
+def forestClassifer(data, threshold=0.4):
+    model = RandomForestClassifier(
+        n_estimators=300,
+        max_depth=6,
+        min_samples_split=20,
+        min_samples_leaf=5,
+        class_weight="balanced",
+        random_state=42
+    )
+
+    feature_cols = [
+        "Open", "High", "Low", "Close", "Volume",
+        "Return_1D", "Return_5D", "SMA_Ratio",
+        "Volatility_20", "Volume_Change", "RSI"
+    ]
+    X = data[feature_cols]
+    y = data["Target"]
+
+    train_size = int(len(data) * 0.8)
+    X_train = X[:train_size]
+    X_test = X[train_size:]
+    y_train = y[:train_size]
+    y_test = y[train_size:]
+
+    model.fit(X_train, y_train)
+
+    proba = model.predict_proba(X_test)[:, 1]
+    pred = (proba > threshold).astype(int)
+
+    data = data.copy()
+    data["Prediction"] = np.nan
+    data.loc[X_test.index, "Prediction"] = pred
+
+    print("Threshold:", threshold)
+    print("Accuracy:", accuracy_score(y_test, pred))
+    print("Precision:", precision_score(y_test, pred, zero_division=0))
+    print("Recall:", recall_score(y_test, pred, zero_division=0))
+    print("F1 Score:", f1_score(y_test, pred, zero_division=0))
+
+    data["RSI"] = calculateRSI(data["Close"])
+    return data
 
 def backtest(data, startDate):
 
@@ -113,15 +183,15 @@ def backtest(data, startDate):
         data["Return"].std()
     ) * (252 ** 0.5)
 
-    print("Buy & Hold Sharpe:", buy_hold_sharpe)
-    print("My Strategy Sharpe Ratio:", sharpe)
+
 
     initial_capital = 1
-
     data["Strategy_Equity"] = initial_capital * (1 + data["Strategy_Return"]).cumprod()
     data["BuyHold_Equity"] = initial_capital * (1 + data["Return"]).cumprod()
 
-    print("Strategy Final Value:", data["Strategy_Equity"].iloc[-1])
-    print("Buy & Hold Final Value:", data["BuyHold_Equity"].iloc[-1])
+    
 
     return data
+ 
+
+   
