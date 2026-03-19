@@ -1,19 +1,20 @@
-Bayes-Model-Trader Updates
-2026-03-18
-Improvements
+# Bayes-Model-Trader Updates
 
-Added add_features() to generate technical indicators (returns, SMA, volatility, RSI)
+## 2026-03-18
 
-Updated model to use these features instead of only OHLCV data
+### Improvements
 
-Switched from model.predict() to predict_proba() with configurable threshold
+- Added `add_features()` to generate technical indicators:
+  - `Return_1D`, `Return_5D`
+  - `SMA_10`, `SMA_20`, `SMA_Ratio`
+  - `Volatility_20`, `Volume_Change`, `RSI`
+- Updated model to use new `feature_cols` instead of only OHLCV data
+- Replaced `model.predict()` with `predict_proba()` and applied threshold (0.4)
+- Added evaluation metrics: accuracy, precision, recall, and F1 score
+- Stored predictions in `data["Prediction"]` aligned with test index
+- Updated pipeline to run feature engineering before training
 
-Added evaluation metrics: accuracy, precision, recall, and F1 score
+### Summary
 
-Improved prediction behavior by adjusting threshold (0.5 → 0.4)
-
-Updated backtesting results with improved signal coverage
-
-Summary
-
-This version improves the model’s ability to capture upward price movements (from ~2.5% to ~99.7%) and increases backtest performance (from ~$1.8 to ~$2.4 over ~1000 days).
+- Increased capture of upward price movements from ~2.5% to ~99.7%
+- Improved backtest performance: $1 → ~$2.4 over ~1000 days (previously ~$1.8)
