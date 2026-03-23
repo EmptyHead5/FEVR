@@ -1,17 +1,35 @@
 # Bayes-Model-Trader Updates
 
-## 2026-03-03
+## 2026-03-18
 
 ### Improvements
 
-- Improved the backtesting system and visualization features
-- Added a backtesting module with equity curve tracking
-- Added Sharpe ratio calculation to measure performance
-- Enabled CSV export from a user-defined start date
-- Added prediction and price plots
-- Reorganized data loading, training, and visualization into separate modules
-- Removed the old `naive_bayes_model.py` file
+- Added `add_features()` to generate technical indicators:
+  - `Return_1D`, `Return_5D`
+  - `SMA_10`, `SMA_20`, `SMA_Ratio`
+  - `Volatility_20`, `Volume_Change`, `RSI`
+- Updated model to use new `feature_cols` instead of only OHLCV data
+- Replaced `model.predict()` with `predict_proba()` and applied threshold (0.4)
+- Added evaluation metrics: accuracy, precision, recall, and F1 score
+- Stored predictions in `data["Prediction"]` aligned with test index
+- Updated pipeline to run feature engineering before training
 
 ### Summary
 
-This version improves how to test and evaluate the model’s trading performance.
+- Increased capture of upward price movements from ~2.5% to ~99.7%
+- Improved backtest performance: $1 → ~$2.4 over ~1000 days (previously ~$1.8)
+
+
+## 2026-03-23
+
+### Improvements
+
+- Integrated James's `backtestBuyLowSellHigh()` trading strategy into the backtesting module
+- Added comparison output between:
+  - Original strategy
+  - Buy Low Sell High strategy
+
+### Summary
+
+- Enabled direct performance comparison between baseline and enhanced trading strategies
+- Introduced more selective entry and exit signals based on combined model and technical conditions

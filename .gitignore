@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+
+*.csv
+
+PUSH.txt
+
+*.pkl
+*.joblib
+
+.env
+venv/
+
+.DS_Store
