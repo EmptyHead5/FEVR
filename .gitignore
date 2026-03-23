@@ -5,7 +5,6 @@ __pycache__/
 
 PUSH.txt
 
-
 *.pkl
 *.joblib
 
