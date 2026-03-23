@@ -18,3 +18,18 @@
 
 - Increased capture of upward price movements from ~2.5% to ~99.7%
 - Improved backtest performance: $1 → ~$2.4 over ~1000 days (previously ~$1.8)
+
+
+## 2026-03-23
+
+### Improvements
+
+- Integrated James's `backtestBuyLowSellHigh()` trading strategy into the backtesting module
+- Added comparison output between:
+  - Original strategy
+  - Buy Low Sell High strategy
+
+### Summary
+
+- Enabled direct performance comparison between baseline and enhanced trading strategies
+- Introduced more selective entry and exit signals based on combined model and technical conditions
