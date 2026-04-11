@@ -33,3 +33,15 @@
 
 - Enabled direct performance comparison between baseline and enhanced trading strategies
 - Introduced more selective entry and exit signals based on combined model and technical conditions
+
+
+## 2026-04-11
+
+### Improvements
+
+- Implemented MLP classifier in `trainingModel.py`
+- Integrated MLP pipeline into `main.py`
+- Added hyperparameter search using `generate_param_list()` (1728 combinations)
+- Added confidence interval and p-value calculation using `trainingModel.confidentInterval`
+- Extended backtesting to support model-based predictions
+- Saved hyperparameter search results to CSV for further analysis
