@@ -3,7 +3,6 @@ from itertools import product
 
 import noiseReduction
 import trainingModel
-import visualization
 import dataLoad
 
 
@@ -103,25 +102,8 @@ if __name__ == "__main__":
     data = dataLoad.extraDataSet(data)
     data = dataLoad.add_features(data)
 
-    visualization.closePricePlot(data)
-
     # ===============================
-    # 2. Bayesian model
-    # ===============================
-    data_bayes = trainingModel.bayesClassifier(data.copy())
-
-    train_size_bayes = int(len(data_bayes) * 0.8)
-    startDate_bayes = data_bayes.index[train_size_bayes]
-
-    data_base = trainingModel.backtest_from_prediction(data_bayes.copy(), startDate_bayes)
-
-    output_base = data_base.loc[startDate_bayes:, [
-        "Return", "Prediction", "Position", "Strategy_Equity", "Target"
-    ]]
-    output_base.to_csv("backtest_original.csv", index=True)
-
-    # ===============================
-    # 3. Default MLP model
+    # 2. MLP model
     # ===============================
     mlp_output = trainingModel.MLPclassifier(data.copy())
 
@@ -135,31 +117,11 @@ if __name__ == "__main__":
         "Return", "Prediction", "Position", "Strategy_Equity", "Target"
     ]]
     output_mlp.to_csv("backtest_mlp.csv", index=True)
+    
+
 
     # ===============================
-    # 4. Final comparison
-    # ===============================
-    print("\n===== Final Comparison =====")
-    print("MLP Strategy:", data_mlp_bt["Strategy_Equity"].iloc[-1])
-    print("MLP Buy & Hold:", data_mlp_bt["BuyHold_Equity"].iloc[-1])
-    print("======================================================")
-    print("Bayesian Strategy:", data_base["Strategy_Equity"].iloc[-1])
-    print("Bayesian Buy & Hold:", data_base["BuyHold_Equity"].iloc[-1])
-
-    # ===============================
-    # 5. Evaluation metrics
-    # ===============================
-    print("\n===== MLP Confidence Interval =====")
-    trainingModel.confidentInterval(mlp_output["y_test"], mlp_output["y_pred"])
-
-    print("\n===== Neural Network (MLP) =====")
-    print("Accuracy:", mlp_output["accuracy"])
-    print("Precision:", mlp_output["precision"])
-    print("Recall:", mlp_output["recall"])
-    print("F1:", mlp_output["f1"])
-
-    # ===============================
-    # 6. Hyperparameter search
+    # Hyperparameter search
     # ===============================
     results = []
     param_list = generate_param_list()
@@ -185,7 +147,7 @@ if __name__ == "__main__":
             continue
 
     # ===============================
-    # 7. Save and analyze results
+    # Save and analyze results
     # ===============================
     results_df = pd.DataFrame(results)
 

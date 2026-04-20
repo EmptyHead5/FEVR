@@ -192,6 +192,8 @@ def MLPclassifier(
     data["Prediction"] = np.nan
     data.loc[test_index, "Prediction"] = y_pred
 
+    
+
     result = {
         "hidden_layer_sizes": hidden_layer_sizes,
         "learning_rate_init": learning_rate_init,
@@ -210,65 +212,6 @@ def MLPclassifier(
     }
     return result
 
-
-
-def bayesClassifier(data, threshold=0.5):
-    data = data.copy()
-    
-
-    data["RSI"] = calculateRSI(data["Close"])
-
-    feature_cols = [
-        "Open", "High", "Low", "Close", "Volume",
-        "Return_1D", "Return_5D", "SMA_Ratio",
-        "Volatility_20", "Volume_Change", "RSI"
-    ]
-
-    data = data.dropna(subset=feature_cols + ["Target"])
-
-    X = data[feature_cols]
-    y = data["Target"]
-
-    train_size = int(len(data) * 0.8)
-    X_train = X[:train_size]
-    X_test = X[train_size:]
-    y_train = y[:train_size]
-    y_test = y[train_size:]
-
-    model = GaussianNB()
-    model.fit(X_train, y_train)
-
-    proba = model.predict_proba(X_test)[:, 1]
-    # this will create a two row matrix where the first row contains the probabilities of 
-    # class 0 and the second row contains the probabilities of class 1.
-
-    threshold = np.percentile(proba, 30) 
-    pred = (proba > threshold).astype(int)
-    # As the percentile increases, the threshold becomes higher,
-    # leading to fewer selected trading signals and making the strategy more conservative.
-    # Use percentile to compute a threshold,
-
-    # which corresponds to a specific quantile of the proba distribution (e.g., the 30th percentile).
-
-    # This threshold acts as a cutoff point to separate "strong signals" from "weak signals".
-
-    # Then convert probabilities into binary classification results:
-    # - proba > threshold -> 1 (predict upward movement)
-    # - otherwise -> 0 (predict no upward movement)
-    
-    # I observed that as the percentile threshold increases, the overall profit decreases.
-    # This suggests that higher predicted probabilities do not lead to better performance,
-    # indicating that the model may not be reliable for long-term use.
-
-    data["Prediction"] = np.nan
-    data.loc[X_test.index, "Prediction"] = pred
-
-    print("Accuracy:", accuracy_score(y_test, pred))
-    print("Precision:", precision_score(y_test, pred, zero_division=0))
-    print("Recall:", recall_score(y_test, pred, zero_division=0))
-    print("F1:", f1_score(y_test, pred, zero_division=0))
-
-    return data
 
 def predict(train, test, predictors, model):
     model.fit(train[predictors], train["Target"])
