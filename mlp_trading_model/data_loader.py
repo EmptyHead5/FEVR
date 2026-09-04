@@ -1,6 +1,6 @@
 import yfinance as yf
 import pandas as pd
-import trainingModel    
+import mlp_model as trainingModel    
 
 def loadAndCleanData():
     data = yf.Ticker("SPY")
