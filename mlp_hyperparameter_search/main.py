@@ -1,7 +1,6 @@
 import pandas as pd
 from itertools import product
 
-import noiseReduction
 import trainingModel
 import dataLoad
 
@@ -23,23 +22,28 @@ def print_results(name, df):
 
 def generate_param_list():
     """
-    Generate a large grid of hyperparameter combinations
+    Generate a smaller hyperparameter grid to reduce runtime
     """
     hidden_options = [
         (32, 16),
-        (64, 32, 16),
-        (128, 64, 32),
-        (128, 64, 32, 16),
+        (64, 32),
     ]
-    learning_rates = [0.01, 0.001, 0.0005, 0.0001]
-    alphas = [0.0001, 0.001, 0.01]
-    batch_sizes = [16, 32, 64]
-    activations = ["relu", "tanh"]
-    thresholds = [0.45, 0.5, 0.55, 0.6, 0.65, 0.7]
+
+    learning_rates = [0.001, 0.0005]
+    alphas = [0.0001, 0.001]
+    batch_sizes = [32]
+    activations = ["relu"]
+    thresholds = [0.5, 0.55, 0.6]
 
     param_list = []
+
     for h, lr, alpha, batch, act, th in product(
-        hidden_options, learning_rates, alphas, batch_sizes, activations, thresholds
+        hidden_options,
+        learning_rates,
+        alphas,
+        batch_sizes,
+        activations,
+        thresholds,
     ):
         param_list.append(
             {
@@ -51,6 +55,7 @@ def generate_param_list():
                 "threshold": th,
             }
         )
+
     return param_list
 
 
@@ -58,22 +63,19 @@ def evaluate_params(data, params):
     """
     Train MLP with given parameters and evaluate performance
     """
-    # Train model
     res = trainingModel.MLPclassifier(data.copy(), **params)
 
-    # Compute confidence interval
     ci = trainingModel.confidentInterval(res["y_test"], res["y_pred"])
 
-    # Prepare backtest data
     data_mlp = res["data"]
     train_size = int(len(data_mlp) * 0.8)
-    startDate = data_mlp.index[train_size]
+    start_date = data_mlp.index[train_size]
 
-    # Run backtest
-    data_bt = trainingModel.backtest_from_prediction(data_mlp.copy(), startDate)
+    data_bt = trainingModel.backtest_from_prediction(data_mlp.copy(), start_date)
 
-    # Extract final equity
-    final_equity = data_bt["Strategy_Equity"].iloc[-1] if not data_bt.empty else None
+    final_equity = None
+    if not data_bt.empty:
+        final_equity = data_bt["Strategy_Equity"].iloc[-1]
 
     return {
         **params,
@@ -88,8 +90,6 @@ def evaluate_params(data, params):
         "n_test": ci["n_test"],
         "n_correct": ci["n_correct"],
         "final_equity": final_equity,
-        "data_bt": data_bt,
-        "raw_result": res,
     }
 
 
@@ -103,25 +103,7 @@ if __name__ == "__main__":
     data = dataLoad.add_features(data)
 
     # ===============================
-    # 2. MLP model
-    # ===============================
-    mlp_output = trainingModel.MLPclassifier(data.copy())
-
-    data_mlp = mlp_output["data"]
-    train_size_mlp = int(len(data_mlp) * 0.8)
-    startDate_mlp = data_mlp.index[train_size_mlp]
-
-    data_mlp_bt = trainingModel.backtest_from_prediction(data_mlp.copy(), startDate_mlp)
-
-    output_mlp = data_mlp_bt.loc[startDate_mlp:, [
-        "Return", "Prediction", "Position", "Strategy_Equity", "Target"
-    ]]
-    output_mlp.to_csv("backtest_mlp.csv", index=True)
-    
-
-
-    # ===============================
-    # Hyperparameter search
+    # 2. Hyperparameter search
     # ===============================
     results = []
     param_list = generate_param_list()
@@ -133,13 +115,11 @@ if __name__ == "__main__":
             print(f"\n[{i}/{len(param_list)}] params: {params}")
 
             out = evaluate_params(data, params)
+            results.append(out)
 
-            # Store results (exclude large objects)
-            results.append(
-                {k: v for k, v in out.items() if k not in ["data_bt", "raw_result"]}
-            )
-
-            print("data_bt empty?", out["data_bt"].empty)
+            print("Accuracy:", out["accuracy"])
+            print("F1:", out["f1"])
+            print("Final Equity:", out["final_equity"])
 
         except Exception as e:
             print(f"Failed on params {params}")
@@ -147,41 +127,95 @@ if __name__ == "__main__":
             continue
 
     # ===============================
-    # Save and analyze results
+    # 3. Save and analyze results
     # ===============================
     results_df = pd.DataFrame(results)
 
-    if not results_df.empty:
-
-        # Sort by F1 score
-        results_df = results_df.sort_values("f1", ascending=False)
-
-        print("\n===== RESULTS SORTED BY F1 =====")
-        print(results_df.head(20))
-
-        results_df.to_csv("mlp_hyperparameter_results.csv", index=False)
-
-        # Apply filtering conditions
-        filtered_df = results_df[
-            (results_df["p_value"] < 0.05) &
-            (results_df["recall"] < 0.98) &
-            (results_df["accuracy"] > 0.52)
-        ].copy()
-
-        filtered_df = filtered_df.sort_values("final_equity", ascending=False)
-
-        print("\n===== FILTERED RESULTS SORTED BY FINAL EQUITY =====")
-        print(filtered_df.head(20))
-
-        filtered_df.to_csv("mlp_filtered_results.csv", index=False)
-
-        # Sort by final profit
-        results_df = results_df.sort_values("final_equity", ascending=False)
-
-        print("\n===== TOP BY PROFIT =====")
-        print(results_df.head(5))
-
-        results_df.to_csv("mlp_results_with_equity.csv", index=False)
+    if results_df.empty:
+        print("No successful results were collected.")
 
     else:
-        print("No successful results were collected.")
+        # Save results sorted by F1
+        results_by_f1 = results_df.sort_values("f1", ascending=False)
+        results_by_f1.to_csv("mlp_hyperparameter_results.csv", index=False)
+
+        # Save results sorted by final equity
+        results_by_equity = results_df.sort_values("final_equity", ascending=False)
+        results_by_equity.to_csv("mlp_results_with_equity.csv", index=False)
+
+        # ===============================
+        # 4. Select best parameters
+        # ===============================
+        param_cols = [
+            "hidden_layer_sizes",
+            "learning_rate_init",
+            "alpha",
+            "batch_size",
+            "activation",
+            "threshold",
+        ]
+
+        top_params = results_by_equity.head(1)[param_cols]
+        top_params.to_csv("best_params_by_final_equity.csv", index=False)
+
+        best_params = top_params.iloc[0].to_dict()
+
+        print("\n===== BEST PARAMS BY FINAL EQUITY =====")
+        for key, value in best_params.items():
+            print(f"{key}: {value}")
+
+        print("\nBest final equity from search:")
+        print(results_by_equity.iloc[0]["final_equity"])
+
+        # ===============================
+        # 5. Re-run MLP using best params
+        # ===============================
+        mlp_output = trainingModel.MLPclassifier(data.copy(), **best_params)
+
+        data_mlp = mlp_output["data"]
+        train_size_mlp = int(len(data_mlp) * 0.8)
+        start_date_mlp = data_mlp.index[train_size_mlp]
+
+        data_mlp_bt = trainingModel.backtest_from_prediction(
+            data_mlp.copy(),
+            start_date_mlp,
+        )
+
+        final_equity_check = data_mlp_bt["Strategy_Equity"].iloc[-1]
+
+        print("\n===== FINAL BACKTEST USING BEST PARAMS =====")
+        print("Backtest start date:", start_date_mlp)
+        print("Backtest end date:", data_mlp_bt.index[-1])
+        print("Final equity from rerun:", final_equity_check)
+
+        print_results("MLP Best Params", data_mlp_bt)
+
+        output_mlp = data_mlp_bt.loc[
+            start_date_mlp:,
+            [
+                "Return",
+                "Prediction",
+                "Position",
+                "Strategy_Equity",
+                "BuyHold_Equity",
+                "Target",
+            ],
+        ]
+
+        output_mlp.to_csv("backtest_mlp.csv", index=True)
+
+        # ===============================
+        # 6. Filter useful results
+        # ===============================
+        filtered_df = results_df[
+            (results_df["p_value"] < 0.05)
+            & (results_df["recall"] < 0.98)
+            & (results_df["accuracy"] > 0.52)
+        ].copy()
+
+
+        print("\nCSV files saved:")
+        print("mlp_hyperparameter_results.csv")
+        print("mlp_results_with_equity.csv")
+        print("best_params_by_final_equity.csv")
+        print("backtest_mlp.csv")

@@ -121,14 +121,14 @@ def calculateRSI(close_prices, period=14):
 
 def MLPclassifier(
     data,
-    hidden_layer_sizes=(64, 32, 16),
+    hidden_layer_sizes=(64, 32),
     learning_rate_init=0.001,
     alpha=0.0001,
     batch_size=32,
-    activation='relu',
-    solver='adam',
-    threshold=0.45,
-    random_state=42
+    activation="relu",
+    threshold=0.5,
+    solver="adam",
+    random_state=42,
 ):
     #hidden_layer_sizes: A tuple representing the number of neurons in each hidden layer,if 
         #hideen layeer sizes too large, it may lead to overfitting, while too small may result in underfitting.
