@@ -63,3 +63,21 @@
 - Identified best MLP configuration: `(32, 16)` with optimized parameters
 - Achieved strong performance with high recall (~97%) and improved final equity (~$365)
 - Results are statistically significant based on hypothesis testing
+  
+## 2026-09-08
+
+### Improvements
+
+- Simplified `main.py` to make the main workflow cleaner and easier to read
+- Separated the MLP hyperparameter search logic into `mlpHyperparameterSearch.py`
+- Added comments to the key MLP hyperparameter search code for better readability
+- Added comments to important parts of `trainingModel.py`
+- Improved code organization by separating the main execution file from the hyperparameter search module
+- Made it easier to pass optimized hyperparameters into the MLP classifier workflow
+
+### Summary
+
+- `main.py` now focuses mainly on running the workflow
+- `mlpHyperparameterSearch.py` contains the core hyperparameter search process
+- `trainingModel.py` is easier to understand with added explanations
+- The project structure is cleaner and easier to maintain for future integration
