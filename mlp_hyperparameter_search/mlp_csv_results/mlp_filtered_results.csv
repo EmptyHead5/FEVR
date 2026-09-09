@@ -1,0 +1,1 @@
+hidden_layer_sizes,learning_rate_init,alpha,batch_size,activation,threshold,accuracy,precision,recall,f1,accuracy_ci,p_value,ci_low,ci_high,n_test,n_correct,final_equity,sharpe
