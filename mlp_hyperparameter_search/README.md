@@ -81,3 +81,25 @@
 - `mlpHyperparameterSearch.py` contains the core hyperparameter search process
 - `trainingModel.py` is easier to understand with added explanations
 - The project structure is cleaner and easier to maintain for future integration
+
+  ## 2026-09-16
+
+### Improvements
+
+- Added a `stop_loss` parameter to `backtestConfidenceFilter()`
+- Added stop-loss logic to limit large daily strategy losses
+- Used `data.loc[data["Strategy_Return"] < stop_loss, "Strategy_Return"] = stop_loss` to cap losses when `Strategy_Return` is lower than `-0.02`
+- Updated CSV column names to make the output files easier to read
+- Renamed important CSV columns such as `Predicted_Prob`, `Position`, `Strategy_Return`, `Strategy_Equity`, and `Target`
+- Improved readability of the backtest output for future project explanation
+- Recorded the updated final backtest result after applying the stop-loss logic
+
+### Summary
+
+- `backtestConfidenceFilter()` now includes `stop_loss=-0.02`
+- The stop-loss rule assumes that during regular U.S. stock market hours, the strategy can sell when the loss is larger than 2%
+- The updated stop-loss logic produced:
+
+```text
+Final equity from rerun: 702.4308675111275
+Sharpe from rerun: 1.7930117074616616
