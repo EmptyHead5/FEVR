@@ -138,17 +138,33 @@ def save_search_results(results, data):
     results_by_equity = results_df.sort_values("final_equity", ascending=False)
     results_by_sharpe = results_df.sort_values("sharpe", ascending=False)
 
-    results_by_f1.to_csv(
+    csv_name_map = {
+        "threshold": "Min_Prob_To_Buy",
+        "accuracy": "Model_Accuracy",
+        "precision": "Model_Precision",
+        "recall": "Model_Recall",
+        "f1": "Model_F1",
+        "accuracy_ci": "Accuracy_CI",
+        "p_value": "P_Value",
+        "ci_low": "CI_Low",
+        "ci_high": "CI_High",
+        "n_test": "Test_Data_Count",
+        "n_correct": "Correct_Predictions",
+        "final_equity": "Final_Strategy_Equity",
+        "sharpe": "Sharpe_Ratio",
+    }
+
+    results_by_f1.rename(columns=csv_name_map).to_csv(
         os.path.join(OUTPUT_FOLDER, "mlp_hyperparameter_results.csv"),
         index=False,
     )
 
-    results_by_equity.to_csv(
+    results_by_equity.rename(columns=csv_name_map).to_csv(
         os.path.join(OUTPUT_FOLDER, "mlp_results_with_equity.csv"),
         index=False,
     )
 
-    results_by_sharpe.to_csv(
+    results_by_sharpe.rename(columns=csv_name_map).to_csv(
         os.path.join(OUTPUT_FOLDER, "mlp_results_by_sharpe.csv"),
         index=False,
     )
@@ -168,7 +184,11 @@ def save_best_params_and_backtest(results_by_sharpe, results_df, data):
 
     top_params = results_by_sharpe.head(1)[param_cols]
 
-    top_params.to_csv(
+    top_params.rename(
+        columns={
+            "threshold": "Min_Prob_To_Buy",
+        }
+    ).to_csv(
         os.path.join(OUTPUT_FOLDER, "best_params_by_sharpe.csv"),
         index=False,
     )
@@ -220,11 +240,25 @@ def save_best_params_and_backtest(results_by_sharpe, results_df, data):
             "Prediction",
             "Predicted_Prob",
             "Position",
+            "Strategy_Return",
             "Strategy_Equity",
             "BuyHold_Equity",
             "Target",
         ],
     ]
+
+    output_mlp = output_mlp.rename(
+        columns={
+            "Return": "Daily_Stock_Return",
+            "Prediction": "Model_Prediction",
+            "Predicted_Prob": "Up_Probability",
+            "Position": "Buy_Position",
+            "Strategy_Return": "Daily_Strategy_Return",
+            "Strategy_Equity": "Strategy_Account_Value",
+            "BuyHold_Equity": "Buy_And_Hold_Value",
+            "Target": "Next_Day_Up",
+        }
+    )
 
     output_mlp.to_csv(
         os.path.join(OUTPUT_FOLDER, "backtest_mlp.csv"),
@@ -239,6 +273,24 @@ def save_best_params_and_backtest(results_by_sharpe, results_df, data):
     ].copy()
 
     filtered_df = filtered_df.sort_values("sharpe", ascending=False)
+
+    filtered_df = filtered_df.rename(
+        columns={
+            "threshold": "Min_Prob_To_Buy",
+            "accuracy": "Model_Accuracy",
+            "precision": "Model_Precision",
+            "recall": "Model_Recall",
+            "f1": "Model_F1",
+            "accuracy_ci": "Accuracy_CI",
+            "p_value": "P_Value",
+            "ci_low": "CI_Low",
+            "ci_high": "CI_High",
+            "n_test": "Test_Data_Count",
+            "n_correct": "Correct_Predictions",
+            "final_equity": "Final_Strategy_Equity",
+            "sharpe": "Sharpe_Ratio",
+        }
+    )
 
     filtered_df.to_csv(
         os.path.join(OUTPUT_FOLDER, "mlp_filtered_results.csv"),

@@ -138,29 +138,39 @@ def backtest_from_prediction(data, startDate):
     return data
 
 
-def backtestConfidenceFilter(data, startDate, min_prob=0.6):
+def backtestConfidenceFilter(data, startDate, min_prob=0.6, stop_loss=-0.02):
+    #by adding stop-loss can siginificantly improve sharp ratio, but it will also reduce the final equity, so need to find a balance between the two
     data = data.dropna(subset=["Predicted_Prob"]).copy()
     data = data.loc[startDate:].copy()
-    #remove all the empty tow, and only keep the data after the startDate
+    # remove all the empty rows, and only keep the data after the startDate
+
     data["Return"] = data["Close"].pct_change()
-    #calculate daily rate of return 
+    # calculate daily rate of return
+
     data["Position"] = 0
-    #defult position is 0, which mean no open position
+    # default position is 0, which means no open position
+
     data.loc[data["Predicted_Prob"] >= min_prob, "Position"] = 1
-    #only open position when predicted probability is greater than the minimum probability threshold
-    #now set threadhold to 0.6, which is more conservative strategy
+    # only open position when predicted probability is greater than the minimum probability threshold
+
     data["Strategy_Return"] = data["Position"].shift(1) * data["Return"]
-    #use the position of the previous day to calculate the strategy return of the current day
+    # use the position of the previous day to calculate the strategy return of the current day
+
+    data.loc[data["Strategy_Return"] < stop_loss, "Strategy_Return"] = stop_loss
+    # stop-loss: limit the maximum daily loss to the stop_loss value
+
     data = data.dropna().copy()
-    #make sure no empty row
+    # make sure no empty row
+
     initial_capital = 100
-    #set initial capital to 100, just test, it can be any number
+    # set initial capital to 100, just for testing, it can be any number
+
     data["Strategy_Equity"] = initial_capital * (1 + data["Strategy_Return"]).cumprod()
     data["BuyHold_Equity"] = initial_capital * (1 + data["Return"]).cumprod()
-    #1.Strategy_Equity,  cumprod will calculate the cumulative product of the strategy return, and than plus initial capital to get the strategy equity 
-    #2.BuyHold_Equity,  cumprod will calculate the cumulative product of the buy and hold return, and than plus initial capital to get the buy and hold equity
-    return data
+    # 1. Strategy_Equity: cumprod calculates the cumulative product of the strategy return, then multiplies by initial capital to get the strategy equity
+    # 2. BuyHold_Equity: cumprod calculates the cumulative product of the buy and hold return, then multiplies by initial capital to get the buy and hold equity
 
+    return data
 
 def calculate_sharpe(df):
     std = df["Strategy_Return"].std()
