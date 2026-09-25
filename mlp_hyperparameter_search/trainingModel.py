@@ -138,7 +138,9 @@ def backtest_from_prediction(data, startDate):
     return data
 
 
-def backtestConfidenceFilter(data, startDate, min_prob=0.6, stop_loss=-0.02):
+def backtestConfidenceFilter(data, startDate, min_prob=0.6, stop_loss=-0.02, transaction_fee=0.0005):
+    #A stop-loss threshold of -2% is used as a common risk management rule.
+    #https://www.cmegroup.com/education/courses/trade-and-risk-management/the-2-percent-rule
     #by adding stop-loss can siginificantly improve sharp ratio, but it will also reduce the final equity, so need to find a balance between the two
     data = data.dropna(subset=["Predicted_Prob"]).copy()
     data = data.loc[startDate:].copy()
@@ -156,7 +158,11 @@ def backtestConfidenceFilter(data, startDate, min_prob=0.6, stop_loss=-0.02):
     data["Strategy_Return"] = data["Position"].shift(1) * data["Return"]
     # use the position of the previous day to calculate the strategy return of the current day
 
-    data.loc[data["Strategy_Return"] < stop_loss, "Strategy_Return"] = stop_loss
+    for i in data.index:
+        if data.loc[i, "Strategy_Return"] < stop_loss:
+            data.loc[i, "Strategy_Return"] = stop_loss - transaction_fee
+    #loop all data, if stop loss being triggered, then set the strategy return to the stop loss value minus the transaction fee
+    #transaction fee source from https://quanterlab.com/articles/foundations-transaction-costs
     # stop-loss: limit the maximum daily loss to the stop_loss value
 
     data = data.dropna().copy()
@@ -172,17 +178,20 @@ def backtestConfidenceFilter(data, startDate, min_prob=0.6, stop_loss=-0.02):
 
     return data
 
-def calculate_sharpe(df):
+def calculate_sharpe(df, annual_rf=0.0376):
+    #risk free rate source from https://fred.stlouisfed.org/series/RIFSGFSY01NA#
+    daily_rf = annual_rf / 252
     std = df["Strategy_Return"].std()
 
     if std == 0 or pd.isna(std):
         return None
 
     sharpe = (
-        df["Strategy_Return"].mean()
+        (df["Strategy_Return"].mean() - daily_rf) 
         / std
     ) * (252 ** 0.5)
-
+    print("Strategy Return", df["Strategy_Return"].mean())
+    
     return sharpe
 
 

@@ -246,19 +246,18 @@ def save_best_params_and_backtest(results_by_sharpe, results_df, data):
             "Target",
         ],
     ]
-
-    output_mlp = output_mlp.rename(
-        columns={
-            "Return": "Daily_Stock_Return",
-            "Prediction": "Model_Prediction",
-            "Predicted_Prob": "Up_Probability",
-            "Position": "Buy_Position",
-            "Strategy_Return": "Daily_Strategy_Return",
-            "Strategy_Equity": "Strategy_Account_Value",
-            "BuyHold_Equity": "Buy_And_Hold_Value",
-            "Target": "Next_Day_Up",
-        }
-    )
+    # output_mlp = output_mlp.rename(
+    #     columns={
+    #         "Return": "Daily_Stock_Return",
+    #         "Prediction": "Model_Prediction",
+    #         "Predicted_Prob": "Up_Probability",
+    #         "Position": "Buy_Position",
+    #         "Strategy_Return": "Daily_Strategy_Return",
+    #         "Strategy_Equity": "Strategy_Account_Value",
+    #         "BuyHold_Equity": "Buy_And_Hold_Value",
+    #         "Target": "Next_Day_Up",
+    #     }
+    # )
 
     output_mlp.to_csv(
         os.path.join(OUTPUT_FOLDER, "backtest_mlp.csv"),
