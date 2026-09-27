@@ -146,6 +146,3 @@ $133.80 - $122.96 = $10.85
 
 Therefore, the strategy achieved a strong return during the backtest period. It outperformed buy-and-hold while maintaining a Sharpe Ratio of approximately `1.97`.
 
-```text
-Final equity from rerun: 702.4308675111275
-Sharpe from rerun: 1.7930117074616616
