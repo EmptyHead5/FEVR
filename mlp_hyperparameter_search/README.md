@@ -94,6 +94,25 @@
 - Improved readability of the backtest output for future project explanation
 - Recorded the updated final backtest result after applying the stop-loss logic
 
+  ## 2026-09-27
+
+### Improvements
+
+- Integrated Alpaca market data into the project
+- Replaced the previous market data source with Alpaca IEX data
+- Tested the MLP classifier and backtesting process using the new Alpaca dataset
+- Found that the original 49 hyperparameter combinations could no longer meet the performance requirement
+- The Sharpe Ratio decreased to approximately `1.2` after changing the data source
+- Expanded `generate_param_list()` to test 360 hyperparameter combinations
+- Added more hidden-layer sizes, learning rates, alpha values, and batch sizes
+
+### Summary
+
+- Successfully connected the project to Alpaca market data
+- Increased the hyperparameter search from 49 to 360 combinations
+- Improved the Sharpe Ratio from approximately `1.2` to `1.97`
+- The new parameter search helped the MLP classifier adapt to the Alpaca dataset
+
 ### Summary
 
 - `backtestConfidenceFilter()` now includes `stop_loss=-0.02`
