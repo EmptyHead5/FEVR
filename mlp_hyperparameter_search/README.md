@@ -118,6 +118,33 @@
 - `backtestConfidenceFilter()` now includes `stop_loss=-0.02`
 - The stop-loss rule assumes that during regular U.S. stock market hours, the strategy can sell when the loss is larger than 2%
 - The updated stop-loss logic produced:
+### Return Conclusion
+
+The strategy's total return was:
+
+```text
+($133.80 / $100.00) - 1 = 33.80%
+```
+
+The compound annualized return was approximately:
+
+```text
+27.21%
+```
+
+The buy-and-hold annualized return was approximately:
+
+```text
+18.62%
+```
+
+The strategy earned approximately `$10.85` more than buy-and-hold:
+
+```text
+$133.80 - $122.96 = $10.85
+```
+
+Therefore, the strategy achieved a strong return during the backtest period. It outperformed buy-and-hold while maintaining a Sharpe Ratio of approximately `1.97`.
 
 ```text
 Final equity from rerun: 702.4308675111275
