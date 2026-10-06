@@ -146,3 +146,44 @@ $133.80 - $122.96 = $10.85
 
 Therefore, the strategy achieved a strong return during the backtest period. It outperformed buy-and-hold while maintaining a Sharpe Ratio of approximately `1.97`.
 
+
+## 2026-09-30
+
+### Improvements
+
+- Replaced Yahoo Finance data with Alpaca market data
+- Configured the Alpaca API key and secret key
+- Successfully connected the project to the Alpaca API
+- Confirmed that the MLP model can use Alpaca data
+
+## 2026-10-02
+
+### Multiple Ticker Symbol Testing
+
+To evaluate the stability of the code, the MLP classifier and backtesting process were tested with several ticker symbols using Alpaca market data.
+
+The following assets were tested:
+
+- `SPY`: S&P 500 ETF
+- `QQQ`: Nasdaq-100 ETF
+- `DIA`: Dow Jones Industrial Average ETF
+- `IWM`: Russell 2000 ETF
+- `AAPL`: Apple stock
+
+### Results
+
+| Symbol | Final Strategy Equity | Sharpe Ratio |
+|---|---:|---:|
+| `SPY` | `$133.80` | `1.9738` |
+| `QQQ` | `$214.15` | `1.7374` |
+| `DIA` | `$155.62` | `1.3468` |
+| `IWM` | `$162.11` | `1.5552` |
+| `AAPL` | `$287.37` | `2.0286` |
+
+### Summary
+
+- The code successfully loaded, processed, trained, and backtested multiple ticker symbols using Alpaca market data.
+- `AAPL` produced the highest final strategy equity of approximately `$287.37` and the highest Sharpe Ratio of approximately `2.03`.
+- `QQQ` produced a final strategy equity of approximately `$214.15` with a Sharpe Ratio of approximately `1.74`.
+- `SPY`, `DIA`, and `IWM` also produced positive returns and Sharpe Ratios greater than `1.0`.
+- These results provide evidence that the code can successfully process and evaluate different ticker symbols.

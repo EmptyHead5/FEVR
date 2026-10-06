@@ -1,17 +1,59 @@
-import yfinance as yf
+import os
 import pandas as pd
-import trainingModel    
+from dotenv import load_dotenv
+from pathlib import Path
 
-def loadAndCleanData():
-    data = yf.Ticker("SPY")
-    data = data.history(period="max") #from 2003-01-29 to present,total 5470 rows data
-    data = data.drop(columns=["Dividends", "Stock Splits","Capital Gains"])
-    # this will remove the the stock company name from the column names, leaving only the price types (e.g., 'open', 'high', 'low', 'close', 'volume')
-    if isinstance(data.columns, pd.MultiIndex):
-        data = data.droplevel(1, axis=1)
+from datetime import datetime, timezone
+
+from alpaca.data.historical import StockHistoricalDataClient
+from alpaca.data.requests import StockBarsRequest
+from alpaca.data.timeframe import TimeFrame
+
+
+env_path = Path(__file__).resolve().parent / ".env"
+load_dotenv(dotenv_path=env_path, override=True)
+
+API_KEY = os.getenv("ALPACA_API_KEY")
+SECRET_KEY = os.getenv("ALPACA_SECRET_KEY")
+env_path = os.getenv("ENV_PATH")
+
+import trainingModel
+
+print("API key loaded:", bool(API_KEY))
+print("Secret key loaded:", bool(SECRET_KEY))
+print("ENV path:", env_path)
+stock_data_client = StockHistoricalDataClient(os.getenv("ALPACA_API_KEY"), os.getenv("ALPACA_SECRET_KEY"))
+#study from https://docs.alpaca.markets/us/docs/getting-started-with-alpaca-market-data
+#https://alpaca.markets/sdks/python/trading.html#trading
+
+def loadAndCleanData(symbol="TSLA"):
+    request_params = StockBarsRequest(
+        symbol_or_symbols=symbol,
+        timeframe=TimeFrame.Day,
+        start=datetime(2015, 1, 1),
+    )
+
+    data = stock_data_client.get_stock_bars(request_params).df
+
+    if isinstance(data.index, pd.MultiIndex):
+        available_symbols = data.index.get_level_values("symbol").unique()
+        print("Available symbols:", available_symbols.tolist())
+        data = data.xs(symbol, level="symbol")
+
+    data = data.rename(
+        columns={
+            "open": "Open",
+            "high": "High",
+            "low": "Low",
+            "close": "Close",
+            "volume": "Volume",
+        }
+    )
+
     return data
 
 def extraDataSet(data):
+    
     data["Tomorrow"] = data["Close"].shift(-1)
     # The shift(-1) function is used to create a new column called "Tomorrow" 
     # that contains the closing price of the next day.

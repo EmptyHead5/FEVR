@@ -1,32 +1,31 @@
-import pandas as pd
-import yfinance as yf
-
+import os
 import dataLoad
 import mlpHyperparameterSearch
 
 
+
+
 def main():
-    data = dataLoad.loadAndCleanData()
-    data = dataLoad.extraDataSet(data)
-    data = dataLoad.add_features(data)
-    #load data 
+    symbols = [
+        "SPY",
+        "QQQ",
+        "DIA",
+        "IWM",
+        "AAPL",
+    ]
+    #360 x 5 = 1800
+    for symbol in symbols:
+        print(f"Testing {symbol}...")
 
-    mlpHyperparameterSearch.run_search(data)
-    #jump to main function in mlpHyperparameterSearch.py to run the hyperparameter search
+        data = dataLoad.loadAndCleanData(symbol)
+        data = dataLoad.extraDataSet(data)
+        data = dataLoad.add_features(data)
 
-    #following codes are only for meeing with instructor 
-    df=pd.read_csv("mlp_csv_results/backtest_mlp.csv")
-    print("useing 80% of data for training, 20% for testing")
-    print("data total days: ", len(data))
-    print("data training days: ",len(data.index) - len(df.index) )
-    print("data tesing days: ",len(df.index) )
+        mlpHyperparameterSearch.run_search(symbol, data)
+        print(f"Finished testing {symbol}.")
 
+        #jump to main function in mlpHyperparameterSearch.py to run the hyperparameter search
 
-    # data["Return"] = data["Close"].pct_change()
-    # data["Position"] = data["Prediction"].shift(1)
-    # data["Strategy_Return"] = data["Position"] * data["Return"]
-
-    print()
 
 
 if __name__ == "__main__":

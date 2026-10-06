@@ -1,5 +1,7 @@
-yfinance
 pandas
 numpy
 scikit-learn
-matplotlib
+scipy
+statsmodels
+alpaca-py
+python-dotenv
