@@ -159,7 +159,7 @@ def backtestConfidenceFilter(data, startDate, min_prob=0.6, stop_loss=-0.02, tra
     # use the position of the previous day to calculate the strategy return of the current day
 
     for i in data.index:
-        if data.loc[i, "Strategy_Return"] < stop_loss:
+        if data.loc[i, "Strategy_Return"] < stop_loss :
             data.loc[i, "Strategy_Return"] = stop_loss - transaction_fee
     #loop all data, if stop loss being triggered, then set the strategy return to the stop loss value minus the transaction fee
     #transaction fee source from https://quanterlab.com/articles/foundations-transaction-costs

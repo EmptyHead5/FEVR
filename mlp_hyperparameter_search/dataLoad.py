@@ -2,6 +2,7 @@ import os
 import pandas as pd
 from dotenv import load_dotenv
 from pathlib import Path
+import ast
 
 from datetime import datetime, timezone
 
@@ -26,7 +27,7 @@ stock_data_client = StockHistoricalDataClient(os.getenv("ALPACA_API_KEY"), os.ge
 #study from https://docs.alpaca.markets/us/docs/getting-started-with-alpaca-market-data
 #https://alpaca.markets/sdks/python/trading.html#trading
 
-def loadAndCleanData(symbol="TSLA"):
+def loadAndCleanData(symbol="SPY"):
     request_params = StockBarsRequest(
         symbol_or_symbols=symbol,
         timeframe=TimeFrame.Day,
@@ -78,3 +79,26 @@ def add_features(data):
     data["Volume_Change"] = data["Volume"].pct_change()
     data["RSI"] = trainingModel.calculateRSI(data["Close"])
     return data
+
+def load_best_parameters(symbol):
+    csv_path = os.path.join(
+    os.path.dirname(__file__),
+    "mlp_csv_results",
+    symbol,
+    "best_params_by_sharpe.csv",
+    )
+    best_parameters = pd.read_csv(csv_path).iloc[0]
+    
+    best_parameters = {
+        "hidden_layer_sizes": ast.literal_eval(
+            best_parameters["hidden_layer_sizes"]
+        ),
+        "learning_rate_init": float(
+            best_parameters["learning_rate_init"]
+        ),
+        "alpha": float(best_parameters["alpha"]),
+        "batch_size": int(best_parameters["batch_size"]),
+        "activation": str(best_parameters["activation"]),
+        "threshold": float(best_parameters["threshold"]),
+    }
+    return best_parameters

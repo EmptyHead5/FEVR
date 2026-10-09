@@ -195,35 +195,16 @@ def save_search_results(symbol, results, data):
         ascending=False,
     )
 
-    csv_name_map = {
-        "threshold": "Min_Prob_To_Buy",
-        "accuracy": "Model_Accuracy",
-        "precision": "Model_Precision",
-        "recall": "Model_Recall",
-        "f1": "Model_F1",
-        "accuracy_ci": "Accuracy_CI",
-        "p_value": "P_Value",
-        "ci_low": "CI_Low",
-        "ci_high": "CI_High",
-        "n_test": "Test_Data_Count",
-        "n_correct": "Correct_Predictions",
-        "final_equity": "Final_Strategy_Equity",
-        "sharpe": "Sharpe_Ratio",
-    }
 
-    results_by_f1.rename(
-        columns=csv_name_map
-    ).to_csv(
-        os.path.join(
-            symbol_folder,
-            "mlp_hyperparameter_results.csv",
-        ),
-        index=False,
+    results_by_f1.to_csv(
+    os.path.join(
+        symbol_folder,
+        "mlp_hyperparameter_results.csv",
+    ),
+    index=False,
     )
 
-    results_by_equity.rename(
-        columns=csv_name_map
-    ).to_csv(
+    results_by_equity.to_csv(
         os.path.join(
             symbol_folder,
             "mlp_results_with_equity.csv",
@@ -231,9 +212,7 @@ def save_search_results(symbol, results, data):
         index=False,
     )
 
-    results_by_sharpe.rename(
-        columns=csv_name_map
-    ).to_csv(
+    results_by_sharpe.to_csv(
         os.path.join(
             symbol_folder,
             "mlp_results_by_sharpe.csv",
@@ -278,19 +257,16 @@ def save_best_params_and_backtest(
 
     top_params = valid_sharpe_results.head(1)[param_cols]
 
-    top_params.rename(
-        columns={
-            "threshold": "Min_Prob_To_Buy",
-        }
-    ).to_csv(
+
+    best_params = top_params.iloc[0].to_dict()
+
+    top_params.to_csv(
         os.path.join(
-            symbol_folder,
+            symbol_folder,  
             "best_params_by_sharpe.csv",
         ),
         index=False,
     )
-
-    best_params = top_params.iloc[0].to_dict()
 
     print(f"\n===== {symbol} BEST PARAMS BY SHARPE =====")
 
