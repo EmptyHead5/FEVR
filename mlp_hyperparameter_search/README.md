@@ -94,12 +94,96 @@
 - Improved readability of the backtest output for future project explanation
 - Recorded the updated final backtest result after applying the stop-loss logic
 
+  ## 2026-09-27
+
+### Improvements
+
+- Integrated Alpaca market data into the project
+- Replaced the previous market data source with Alpaca IEX data
+- Tested the MLP classifier and backtesting process using the new Alpaca dataset
+- Found that the original 49 hyperparameter combinations could no longer meet the performance requirement
+- The Sharpe Ratio decreased to approximately `1.2` after changing the data source
+- Expanded `generate_param_list()` to test 360 hyperparameter combinations
+- Added more hidden-layer sizes, learning rates, alpha values, and batch sizes
+
+### Summary
+
+- Successfully connected the project to Alpaca market data
+- Increased the hyperparameter search from 49 to 360 combinations
+- Improved the Sharpe Ratio from approximately `1.2` to `1.97`
+- The new parameter search helped the MLP classifier adapt to the Alpaca dataset
+
 ### Summary
 
 - `backtestConfidenceFilter()` now includes `stop_loss=-0.02`
 - The stop-loss rule assumes that during regular U.S. stock market hours, the strategy can sell when the loss is larger than 2%
 - The updated stop-loss logic produced:
+### Return Conclusion
+
+The strategy's total return was:
 
 ```text
-Final equity from rerun: 702.4308675111275
-Sharpe from rerun: 1.7930117074616616
+($133.80 / $100.00) - 1 = 33.80%
+```
+
+The compound annualized return was approximately:
+
+```text
+27.21%
+```
+
+The buy-and-hold annualized return was approximately:
+
+```text
+18.62%
+```
+
+The strategy earned approximately `$10.85` more than buy-and-hold:
+
+```text
+$133.80 - $122.96 = $10.85
+```
+
+Therefore, the strategy achieved a strong return during the backtest period. It outperformed buy-and-hold while maintaining a Sharpe Ratio of approximately `1.97`.
+
+
+## 2026-09-30
+
+### Improvements
+
+- Replaced Yahoo Finance data with Alpaca market data
+- Configured the Alpaca API key and secret key
+- Successfully connected the project to the Alpaca API
+- Confirmed that the MLP model can use Alpaca data
+
+## 2026-10-02
+
+### Multiple Ticker Symbol Testing
+
+To evaluate the stability of the code, the MLP classifier and backtesting process were tested with several ticker symbols using Alpaca market data.
+
+The following assets were tested:
+
+- `SPY`: S&P 500 ETF
+- `QQQ`: Nasdaq-100 ETF
+- `DIA`: Dow Jones Industrial Average ETF
+- `IWM`: Russell 2000 ETF
+- `AAPL`: Apple stock
+
+### Results
+
+| Symbol | Final Strategy Equity | Sharpe Ratio |
+|---|---:|---:|
+| `SPY` | `$133.80` | `1.9738` |
+| `QQQ` | `$214.15` | `1.7374` |
+| `DIA` | `$155.62` | `1.3468` |
+| `IWM` | `$162.11` | `1.5552` |
+| `AAPL` | `$287.37` | `2.0286` |
+
+### Summary
+
+- The code successfully loaded, processed, trained, and backtested multiple ticker symbols using Alpaca market data.
+- `AAPL` produced the highest final strategy equity of approximately `$287.37` and the highest Sharpe Ratio of approximately `2.03`.
+- `QQQ` produced a final strategy equity of approximately `$214.15` with a Sharpe Ratio of approximately `1.74`.
+- `SPY`, `DIA`, and `IWM` also produced positive returns and Sharpe Ratios greater than `1.0`.
+- These results provide evidence that the code can successfully process and evaluate different ticker symbols.

@@ -1,21 +1,9 @@
-import pandas as pd
-import yfinance as yf
+import user_UI as ui
 
-import dataLoad
-import mlpHyperparameterSearch
 
 
 def main():
-    data = dataLoad.loadAndCleanData()
-    data = dataLoad.extraDataSet(data)
-    data = dataLoad.add_features(data)
-    #load data 
-
-    mlpHyperparameterSearch.run_search(data)
-    #jump to main function in mlpHyperparameterSearch.py to run the hyperparameter search
-
-    print()
-
-
+    symbols = ["SPY"]
+    ui.get_user_choice(symbols)
 if __name__ == "__main__":
     main()
