@@ -187,3 +187,33 @@ The following assets were tested:
 - `QQQ` produced a final strategy equity of approximately `$214.15` with a Sharpe Ratio of approximately `1.74`.
 - `SPY`, `DIA`, and `IWM` also produced positive returns and Sharpe Ratios greater than `1.0`.
 - These results provide evidence that the code can successfully process and evaluate different ticker symbols.
+
+## 2026-10-06
+
+### Improvements
+
+- Connected the MLP model to Alpaca Paper Trading
+- Created `alpacaPaperTrade.py` for Paper Trading operations
+- Implemented `trade_from_probability()` for model-based orders
+- Implemented `return_All_order()` for order retrieval
+- Implemented `run_trading_stream()` for order-status updates
+- Created `get_user_choice()` for the command-line menu
+- Enabled saved-parameter loading
+
+### Summary
+
+- Completed the user interface and Alpaca Paper Trading connection
+
+
+## 2026-10-09
+
+### Improvements
+
+- Implemented `run_market_data_stream()` for real-time market data
+- Displayed one-minute SPY prices and returns
+- Integrated the market-data stream into the command-line menu
+- Submitted and filled fractional SPY Paper Trading orders
+
+### Summary
+
+- Completed minute-level market monitoring and the Paper Trading workflow
