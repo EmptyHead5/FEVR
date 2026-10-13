@@ -1,5 +1,4 @@
 name: Paper Trading
-
 on:
   schedule:
     - cron: "35 14 * * 1-5"
