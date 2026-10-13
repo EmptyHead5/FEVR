@@ -2,7 +2,8 @@ from itertools import product
 from pathlib import Path
 
 import pandas as pd
-import joblib
+
+
 
 import trainingModel
 
@@ -287,16 +288,6 @@ def save_best_params_and_backtest(
     mlp_output = trainingModel.MLPclassifier(
         data.copy(),
         **best_params,
-    )
-
-    joblib.dump(
-    {
-        "model": mlp_output["model"],
-        "scaler": mlp_output["scaler"],
-        "feature_cols": mlp_output["feature_cols"],
-        "threshold": best_params["threshold"],
-    },
-    symbol_folder / f"{symbol}_model.joblib",
     )
 
     start_date, data_backtest = run_backtest(
