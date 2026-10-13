@@ -38,7 +38,7 @@ jobs:
         run: |
           pip install pandas numpy scipy statsmodels scikit-learn python-dotenv alpaca-py
       - name: Run hyperparameter search
-        run: python mlpHyperparameterSearch.py
+        run: python -u mlpHyperparameterSearch.py
         
       - name: Run paper trading
-        run: python scheduledTrade.py
+        run: python -u scheduledTrade.py
