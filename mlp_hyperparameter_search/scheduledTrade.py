@@ -7,7 +7,8 @@ import dataLoad
 
 
 symbol = "SPY"
-clock = alpacaPaperTrade.get_trading_client().get_clock()
+clock = alpacaPaperTrade.trading_client.get_clock()
+
 
 if clock.is_open:
     csv_path = (
