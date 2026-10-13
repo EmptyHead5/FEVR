@@ -1,23 +1,41 @@
-import os
 from itertools import product
+from pathlib import Path
 
 import pandas as pd
+import joblib
 
 import trainingModel
 
 
-OUTPUT_FOLDER = "mlp_csv_results"
+BASE_DIR = Path(__file__).resolve().parent
+OUTPUT_FOLDER = BASE_DIR / "mlp_csv_results"
+
+PARAM_COLUMNS = [
+    "hidden_layer_sizes",
+    "learning_rate_init",
+    "alpha",
+    "batch_size",
+    "activation",
+    "threshold",
+]
+
+OUTPUT_COLUMNS = [
+    "Return",
+    "Prediction",
+    "Predicted_Prob",
+    "Position",
+    "Strategy_Return",
+    "Strategy_Equity",
+    "BuyHold_Equity",
+    "Target",
+]
 
 
-def print_results(name, df):
-    final_equity = df["Strategy_Equity"].iloc[-1]
-    buy_hold = df["BuyHold_Equity"].iloc[-1]
-    sharpe = trainingModel.calculate_sharpe(df)
-
-    print(f"===== {name} =====")
-    print("Final Strategy Equity:", final_equity)
-    print("Buy & Hold Equity:", buy_hold)
-    print("Sharpe Ratio:", sharpe)
+def print_results(name, data):
+    print(f"\n===== {name} =====")
+    print("Final Strategy Equity:", data["Strategy_Equity"].iloc[-1])
+    print("Buy & Hold Equity:", data["BuyHold_Equity"].iloc[-1])
+    print("Sharpe Ratio:", trainingModel.calculate_sharpe(data))
 
 
 def generate_param_list():
@@ -28,59 +46,53 @@ def generate_param_list():
         (64, 32, 16),
     ]
 
-    learning_rates = [
-        0.01,
-        0.001,
-        0.0005,
-    ]
+    learning_rates = [0.01, 0.001, 0.0005]
+    alphas = [0.0001, 0.001, 0.01]
+    batch_sizes = [32, 64]
+    activations = ["relu"]
+    thresholds = [0.50, 0.55, 0.60, 0.65, 0.70]
 
-    alphas = [
-        0.0001,
-        0.001,
-        0.01,
-    ]
-
-    batch_sizes = [
-        32,
-        64,
-    ]
-
-    activations = [
-        "relu",
-    ]
-
-    thresholds = [
-        0.50,
-        0.55,
-        0.60,
-        0.65,
-        0.70,
-    ]
-
-    param_list = []
-
-    for h, lr, alpha, batch, act, threshold in product(
-        hidden_options,
-        learning_rates,
-        alphas,
-        batch_sizes,
-        activations,
-        thresholds,
-    ):
-        param_list.append(
-            {
-                "hidden_layer_sizes": h,
-                "learning_rate_init": lr,
-                "alpha": alpha,
-                "batch_size": batch,
-                "activation": act,
-                "threshold": threshold,
-            }
+    return [
+        {
+            "hidden_layer_sizes": hidden,
+            "learning_rate_init": learning_rate,
+            "alpha": alpha,
+            "batch_size": batch_size,
+            "activation": activation,
+            "threshold": threshold,
+        }
+        for (
+            hidden,
+            learning_rate,
+            alpha,
+            batch_size,
+            activation,
+            threshold,
+        ) in product(
+            hidden_options,
+            learning_rates,
+            alphas,
+            batch_sizes,
+            activations,
+            thresholds,
         )
+    ]
 
-    print("Total parameter combinations:", len(param_list))
 
-    return param_list
+def run_backtest(data_mlp, threshold):
+    if data_mlp.empty:
+        raise ValueError("The model returned no data.")
+
+    train_size = int(len(data_mlp) * 0.8)
+    start_date = data_mlp.index[train_size]
+
+    data_backtest = trainingModel.backtestConfidenceFilter(
+        data_mlp.copy(),
+        start_date,
+        min_prob=threshold,
+    )
+
+    return start_date, data_backtest
 
 
 def evaluate_params(data, params):
@@ -94,15 +106,9 @@ def evaluate_params(data, params):
         result["y_pred"],
     )
 
-    data_mlp = result["data"]
-
-    train_size = int(len(data_mlp) * 0.8)
-    start_date = data_mlp.index[train_size]
-
-    data_backtest = trainingModel.backtestConfidenceFilter(
-        data_mlp.copy(),
-        start_date,
-        min_prob=params["threshold"],
+    _, data_backtest = run_backtest(
+        result["data"],
+        params["threshold"],
     )
 
     final_equity = None
@@ -154,25 +160,12 @@ def run_search(symbol, data):
         except Exception as error:
             print(f"Parameter combination failed: {error}")
 
-    results_df = save_search_results(
-        symbol,
-        results,
-        data,
-    )
-
-    return results_df
+    return save_search_results(symbol, results, data)
 
 
 def save_search_results(symbol, results, data):
-    symbol_folder = os.path.join(
-        OUTPUT_FOLDER,
-        symbol,
-    )
-
-    os.makedirs(
-        symbol_folder,
-        exist_ok=True,
-    )
+    symbol_folder = OUTPUT_FOLDER / symbol
+    symbol_folder.mkdir(parents=True, exist_ok=True)
 
     results_df = pd.DataFrame(results)
 
@@ -195,157 +188,37 @@ def save_search_results(symbol, results, data):
         ascending=False,
     )
 
-
     results_by_f1.to_csv(
-    os.path.join(
-        symbol_folder,
-        "mlp_hyperparameter_results.csv",
-    ),
-    index=False,
+        symbol_folder / "mlp_hyperparameter_results.csv",
+        index=False,
     )
 
     results_by_equity.to_csv(
-        os.path.join(
-            symbol_folder,
-            "mlp_results_with_equity.csv",
-        ),
+        symbol_folder / "mlp_results_with_equity.csv",
         index=False,
     )
 
     results_by_sharpe.to_csv(
-        os.path.join(
-            symbol_folder,
-            "mlp_results_by_sharpe.csv",
-        ),
+        symbol_folder / "mlp_results_by_sharpe.csv",
         index=False,
     )
+
+    save_filtered_results(symbol_folder, results_df)
 
     save_best_params_and_backtest(
         symbol,
         symbol_folder,
         results_by_sharpe,
-        results_df,
         data,
     )
+
+    print("\nCSV files saved in folder:")
+    print(symbol_folder)
 
     return results_df
 
 
-def save_best_params_and_backtest(
-    symbol,
-    symbol_folder,
-    results_by_sharpe,
-    results_df,
-    data,
-):
-    param_cols = [
-        "hidden_layer_sizes",
-        "learning_rate_init",
-        "alpha",
-        "batch_size",
-        "activation",
-        "threshold",
-    ]
-
-    valid_sharpe_results = results_by_sharpe.dropna(
-        subset=["sharpe"]
-    )
-
-    if valid_sharpe_results.empty:
-        print(f"No valid Sharpe Ratio was produced for {symbol}.")
-        return
-
-    top_params = valid_sharpe_results.head(1)[param_cols]
-
-
-    best_params = top_params.iloc[0].to_dict()
-
-    top_params.to_csv(
-        os.path.join(
-            symbol_folder,  
-            "best_params_by_sharpe.csv",
-        ),
-        index=False,
-    )
-
-    print(f"\n===== {symbol} BEST PARAMS BY SHARPE =====")
-
-    for key, value in best_params.items():
-        print(f"{key}: {value}")
-
-    print("\nBest Sharpe from search:")
-    print(valid_sharpe_results.iloc[0]["sharpe"])
-
-    print("\nBest final equity from search:")
-    print(valid_sharpe_results.iloc[0]["final_equity"])
-
-    mlp_output = trainingModel.MLPclassifier(
-        data.copy(),
-        **best_params,
-    )
-
-    data_mlp = mlp_output["data"]
-
-    train_size_mlp = int(len(data_mlp) * 0.8)
-    start_date_mlp = data_mlp.index[train_size_mlp]
-
-    data_mlp_backtest = trainingModel.backtestConfidenceFilter(
-        data_mlp.copy(),
-        start_date_mlp,
-        min_prob=best_params["threshold"],
-    )
-
-    if data_mlp_backtest.empty:
-        print(f"\nFinal backtest returned no rows for {symbol}.")
-        return
-
-    final_equity_check = (
-        data_mlp_backtest["Strategy_Equity"].iloc[-1]
-    )
-
-    sharpe_check = trainingModel.calculate_sharpe(
-        data_mlp_backtest
-    )
-
-    print("\n===== FINAL BACKTEST USING BEST PARAMS =====")
-    print("Symbol:", symbol)
-    print("Backtest start date:", start_date_mlp)
-    print(
-        "Backtest end date:",
-        data_mlp_backtest.index[-1],
-    )
-    print("Final equity from rerun:", final_equity_check)
-    print("Sharpe from rerun:", sharpe_check)
-
-    print_results(
-        f"{symbol} MLP Confidence Filter",
-        data_mlp_backtest,
-    )
-
-    output_columns = [
-        "Return",
-        "Prediction",
-        "Predicted_Prob",
-        "Position",
-        "Strategy_Return",
-        "Strategy_Equity",
-        "BuyHold_Equity",
-        "Target",
-    ]
-
-    output_mlp = data_mlp_backtest.loc[
-        start_date_mlp:,
-        output_columns,
-    ]
-
-    output_mlp.to_csv(
-        os.path.join(
-            symbol_folder,
-            f"{symbol}_result.csv",
-        ),
-        index=True,
-    )
-
+def save_filtered_results(symbol_folder, results_df):
     filtered_df = results_df[
         (results_df["p_value"] < 0.05)
         & (results_df["recall"] < 0.98)
@@ -374,15 +247,90 @@ def save_best_params_and_backtest(
         "sharpe": "Sharpe_Ratio",
     }
 
-    filtered_df.rename(
-        columns=filtered_name_map
-    ).to_csv(
-        os.path.join(
-            symbol_folder,
-            "mlp_filtered_results.csv",
-        ),
+    filtered_df.rename(columns=filtered_name_map).to_csv(
+        symbol_folder / "mlp_filtered_results.csv",
         index=False,
     )
 
-    print("\nCSV files saved in folder:")
-    print(symbol_folder)
+
+def save_best_params_and_backtest(
+    symbol,
+    symbol_folder,
+    results_by_sharpe,
+    data,
+):
+    valid_results = results_by_sharpe.dropna(subset=["sharpe"])
+
+    if valid_results.empty:
+        print(f"No valid Sharpe Ratio was produced for {symbol}.")
+        return
+
+    top_params = valid_results.head(1)[PARAM_COLUMNS]
+    best_params = top_params.iloc[0].to_dict()
+
+    top_params.to_csv(
+        symbol_folder / "best_params_by_sharpe.csv",
+        index=False,
+    )
+
+    print(f"\n===== {symbol} BEST PARAMS BY SHARPE =====")
+
+    for key, value in best_params.items():
+        print(f"{key}: {value}")
+
+    print("Best Sharpe from search:", valid_results.iloc[0]["sharpe"])
+    print(
+        "Best final equity from search:",
+        valid_results.iloc[0]["final_equity"],
+    )
+
+    mlp_output = trainingModel.MLPclassifier(
+        data.copy(),
+        **best_params,
+    )
+
+    joblib.dump(
+    {
+        "model": mlp_output["model"],
+        "scaler": mlp_output["scaler"],
+        "feature_cols": mlp_output["feature_cols"],
+        "threshold": best_params["threshold"],
+    },
+    symbol_folder / f"{symbol}_model.joblib",
+    )
+
+    start_date, data_backtest = run_backtest(
+        mlp_output["data"],
+        best_params["threshold"],
+    )
+
+    if data_backtest.empty:
+        print(f"Final backtest returned no rows for {symbol}.")
+        return
+
+    print("\nBacktest start date:", start_date)
+    print("Backtest end date:", data_backtest.index[-1])
+
+    print_results(
+        f"{symbol} MLP Confidence Filter",
+        data_backtest,
+    )
+
+    output_mlp = data_backtest.loc[
+        start_date:,
+        OUTPUT_COLUMNS,
+    ]
+
+    output_mlp.to_csv(
+        symbol_folder / f"{symbol}_result.csv",
+        index=True,
+    )
+
+if __name__ == "__main__":
+    import dataLoad
+
+    data = dataLoad.loadAndCleanData("SPY")
+    data = dataLoad.extraDataSet(data)
+    data = dataLoad.add_features(data)
+
+    run_search("SPY", data)
