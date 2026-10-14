@@ -217,3 +217,17 @@ The following assets were tested:
 ### Summary
 
 - Completed minute-level market monitoring and the Paper Trading workflow
+
+## 2026-10-14
+
+### Improvements
+
+- Set up GitHub Actions for automatic Paper Trading
+- Scheduled it to run every weekday
+- Ran the MLP hyperparameter search before trading
+- Connected the latest prediction results to Alpaca Paper Trading
+- Fixed workflow errors and confirmed it runs successfully
+
+### Summary
+
+- The model search and Paper Trading process can now run automatically
