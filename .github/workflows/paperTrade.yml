@@ -2,9 +2,9 @@
 name: Paper Trading
 on:
   schedule:
-    - cron: "35 14 * * 1-5" 
-    # run at 14:35 UTC (10:35 AM EST) every weekday (Monday to Friday)
-    #for Phenix, AZ, which is UTC-7, this will run at 7:35 AM local time every weekday
+    - cron: "35 13 * * 1-5"  
+    # In Phoenix, AZ (UTC-7), this runs at 6:35 AM local time.
+    # For Phoenix, AZ (UTC-7), this runs at 6:35 AM local time every weekday.
   workflow_dispatch:
 
 permissions:
