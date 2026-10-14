@@ -1,10 +1,10 @@
-#study from https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax
 name: Paper Trading
+
 on:
   schedule:
-    - cron: "59 9 * * 1-5"
-      timezone: "America/Phoenix"
-      # Run at 9:50 AM Phoenix time every Monday through Friday.
+    - cron: "30 9 * * 1-5"
+      timezone: "America/New_York"
+      # Run at 9:30 AM New York time every Monday through Friday.
   workflow_dispatch:
 
 permissions:
@@ -38,8 +38,9 @@ jobs:
       - name: Install dependencies
         run: |
           pip install pandas numpy scipy statsmodels scikit-learn python-dotenv alpaca-py
+
       - name: Run hyperparameter search
         run: python -u mlpHyperparameterSearch.py
-        
+
       - name: Run paper trading
         run: python -u scheduledTrade.py
