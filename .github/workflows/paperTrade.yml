@@ -2,9 +2,10 @@ name: Paper Trading
 
 on:
   schedule:
-    - cron: "35 9-15 * * 1-5"
+    - cron: "30/5 9 * * 1-5"
       timezone: "America/New_York"
-      # Run hourly from 9:35 AM through 3:35 PM ET.
+    - cron: "*/5 10-15 * * 1-5"
+      timezone: "America/New_York"
   workflow_dispatch:
 
 permissions:
