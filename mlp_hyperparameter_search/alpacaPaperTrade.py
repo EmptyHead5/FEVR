@@ -45,18 +45,34 @@ def trade_from_probability(
     execute=False,
 ):
     if predicted_prob >= threshold:
+        print(
+            f"Buy condition met: probability {predicted_prob:.2%} "
+            f">= threshold {threshold:.2%}"
+        )
+
         market_order_data = MarketOrderRequest(
             symbol=symbol,
             notional=dollar_amount,
             side=OrderSide.BUY,
-            time_in_force=TimeInForce.DAY
+            time_in_force=TimeInForce.DAY,
         )
 
-        market_order = trading_client.submit_order(order_data=market_order_data) if execute else None
-        return market_order
+        if execute:
+            market_order = get_trading_client().submit_order(
+                order_data=market_order_data
+            )
+            print(f"Order submitted: Buy ${dollar_amount:.2f} of {symbol}")
+            print(f"Order ID: {market_order.id}")
+            return market_order
 
+        print("Preview only: order was not submitted.")
+        return None
+
+    print(
+        f"No buy: probability {predicted_prob:.2%} "
+        f"< threshold {threshold:.2%}"
+    )
     return None
-
 async def minute_bar_handler(bar):
     change = (bar.close - bar.open) / bar.open
 
