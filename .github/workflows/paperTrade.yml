@@ -2,10 +2,7 @@ name: Paper Trading
 
 on:
   schedule:
-    - cron: "30/5 9 * * 1-5"
-      timezone: "America/New_York"
-    - cron: "*/5 10-15 * * 1-5"
-      timezone: "America/New_York"
+    - cron: "*/10 * * * *"
   workflow_dispatch:
 
 permissions:
