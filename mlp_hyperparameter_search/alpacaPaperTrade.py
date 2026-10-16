@@ -58,7 +58,7 @@ def trade_from_probability(
         )
 
         if execute:
-            market_order = get_trading_client().submit_order(
+            market_order = trading_client.submit_order(
                 order_data=market_order_data
             )
             print(f"Order submitted: Buy ${dollar_amount:.2f} of {symbol}")
@@ -73,6 +73,7 @@ def trade_from_probability(
         f"< threshold {threshold:.2%}"
     )
     return None
+
 async def minute_bar_handler(bar):
     change = (bar.close - bar.open) / bar.open
 
