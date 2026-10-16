@@ -21,7 +21,7 @@ trading_client = TradingClient(
 
 clock = trading_client.get_clock()
 
-if clock.is_open:
+if True:
     csv_path = (
         Path(__file__).resolve().parent
         / "mlp_csv_results"
