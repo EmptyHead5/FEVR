@@ -1,6 +1,44 @@
 version: 2.1
 
+parameters:
+  scheduled:
+    type: boolean
+    default: false
+
+  run_search:
+    type: boolean
+    default: false
+
+commands:
+  install-dependencies:
+    steps:
+      - run:
+          name: Install dependencies
+          command: |
+            pip install pandas numpy scipy statsmodels scikit-learn python-dotenv alpaca-py
+
 jobs:
+  parameter-search:
+    docker:
+      - image: cimg/python:3.12
+
+    working_directory: ~/project
+
+    steps:
+      - checkout
+      - install-dependencies
+
+      - run:
+          name: Run hyperparameter search
+          command: |
+            cd mlp_hyperparameter_search
+            python -u mlpHyperparameterSearch.py
+
+      - save_cache:
+          key: mlp-results-v1-{{ epoch }}
+          paths:
+            - mlp_hyperparameter_search/mlp_csv_results
+
   paper-trading:
     docker:
       - image: cimg/python:3.12
@@ -9,17 +47,11 @@ jobs:
 
     steps:
       - checkout
+      - install-dependencies
 
-      - run:
-          name: Install dependencies
-          command: |
-            pip install pandas numpy scipy statsmodels scikit-learn python-dotenv alpaca-py
-
-      - run:
-          name: Run hyperparameter search
-          command: |
-            cd mlp_hyperparameter_search
-            python -u mlpHyperparameterSearch.py
+      - restore_cache:
+          keys:
+            - mlp-results-v1-
 
       - run:
           name: Run paper trading
@@ -28,6 +60,24 @@ jobs:
             python -u scheduledTrade.py
 
 workflows:
-  paper-trading:
+  daily-search-and-trade:
+    when:
+      and:
+        - << pipeline.parameters.scheduled >>
+        - << pipeline.parameters.run_search >>
+
+    jobs:
+      - parameter-search
+
+      - paper-trading:
+          requires:
+            - parameter-search
+
+  trading-only:
+    when:
+      and:
+        - << pipeline.parameters.scheduled >>
+        - not: << pipeline.parameters.run_search >>
+
     jobs:
       - paper-trading
