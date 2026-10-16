@@ -1,0 +1,33 @@
+version: 2.1
+
+jobs:
+  paper-trading:
+    docker:
+      - image: cimg/python:3.12
+
+    working_directory: ~/project
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install dependencies
+          command: |
+            pip install pandas numpy scipy statsmodels scikit-learn python-dotenv alpaca-py
+
+      - run:
+          name: Run hyperparameter search
+          command: |
+            cd mlp_hyperparameter_search
+            python -u mlpHyperparameterSearch.py
+
+      - run:
+          name: Run paper trading
+          command: |
+            cd mlp_hyperparameter_search
+            python -u scheduledTrade.py
+
+workflows:
+  paper-trading:
+    jobs:
+      - paper-trading
