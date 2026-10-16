@@ -7,7 +7,7 @@ import dataLoad
 
 
 symbol = "SPY"
-clock = alpacaPaperTrade.trading_client.get_clock()
+clock = alpacaPaperTrade.get_trading_client().get_clock()
 
 
 if clock.is_open:
@@ -21,14 +21,11 @@ if clock.is_open:
     data = pd.read_csv(csv_path, index_col=0)
     probabilities = data["Predicted_Prob"].dropna()
 
+
     probability = float(probabilities.iloc[-1])
-    training_data_end_date = probabilities.index[-1]
+    threshold = dataLoad.load_best_parameters(symbol)["threshold"]
 
-    best_parameters = dataLoad.load_best_parameters(symbol)
-    threshold = best_parameters["threshold"]
-
-    print(f"Training data end date: {training_data_end_date}")
-    print(f"Best parameters: {best_parameters}")
+    print("Prediction data date:", probabilities.index[-1])
     print(f"Up probability: {probability:.2%}")
     print(f"Threshold: {threshold:.2%}")
 
