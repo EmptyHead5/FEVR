@@ -1,0 +1,2 @@
+hidden_layer_sizes,learning_rate_init,alpha,batch_size,activation,Min_Prob_To_Buy,Model_Accuracy,Model_Precision,Model_Recall,Model_F1,Accuracy_CI,P_Value,CI_Low,CI_High,Test_Data_Count,Correct_Predictions,Final_Strategy_Equity,Sharpe_Ratio
+"(128, 64)",0.001,0.01,32,relu,0.65,0.5464684014869888,0.5480769230769231,0.9693877551020408,0.7002457002457002,0.5464684014869888,0.034542952645155264,0.5042198824801827,0.5880580323711908,538,294,161.4615972787518,1.3630587734455049
