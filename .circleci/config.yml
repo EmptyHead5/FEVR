@@ -26,6 +26,7 @@ jobs:
 
     steps:
       - checkout
+
       - install-dependencies
 
       - run:
@@ -35,11 +36,12 @@ jobs:
             python -u mlpHyperparameterSearch.py
 
       - save_cache:
-          key: mlp-results-v1-{{ epoch }}
+          name: Save best parameters
+          key: mlp-hourly-results-v1-{{ epoch }}
           paths:
             - mlp_hyperparameter_search/mlp_csv_results
 
-  paper-trading:
+  hourly-paper-trading:
     docker:
       - image: cimg/python:3.12
 
@@ -47,20 +49,22 @@ jobs:
 
     steps:
       - checkout
+
       - install-dependencies
 
       - restore_cache:
+          name: Restore best parameters
           keys:
-            - mlp-results-v1-
+            - mlp-hourly-results-v1-
 
       - run:
-          name: Run paper trading
+          name: Run hourly prediction and paper trading
           command: |
             cd mlp_hyperparameter_search
-            python -u scheduledTrade.py
+            python -u hourlyTrade.py
 
 workflows:
-  daily-search-and-trade:
+  daily-parameter-search:
     when:
       and:
         - << pipeline.parameters.scheduled >>
@@ -69,15 +73,11 @@ workflows:
     jobs:
       - parameter-search
 
-      - paper-trading:
-          requires:
-            - parameter-search
-
-  trading-only:
+  hourly-paper-trading:
     when:
       and:
         - << pipeline.parameters.scheduled >>
         - not: << pipeline.parameters.run_search >>
 
     jobs:
-      - paper-trading
+      - hourly-paper-trading
