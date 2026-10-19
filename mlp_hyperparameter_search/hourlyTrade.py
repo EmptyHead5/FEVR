@@ -15,7 +15,7 @@ print("Market is open:", clock.is_open)
 if clock.is_open:
     data = dataLoad.loadAndCleanData(
         symbol,
-        timeframe=TimeFrame.Hour,
+        timeframe=TimeFrame.Minute,
     )
 
     data = dataLoad.extraDataSet(data)
