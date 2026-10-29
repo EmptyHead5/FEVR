@@ -42,7 +42,7 @@ def trade_from_probability(
     predicted_prob,
     threshold,
     dollar_amount=100,
-    execute=False,
+    execute=True,
 ):
     if predicted_prob >= threshold:
         print(
