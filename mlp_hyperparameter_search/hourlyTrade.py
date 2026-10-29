@@ -14,7 +14,7 @@ clock = alpacaPaperTrade.trading_client.get_clock()
 print("Market is open:", clock.is_open, flush=True)
 
 
-if True:  # clock.is_open:
+if clock.is_open:  # clock.is_open:
 
     # 1. Load market data
     start = time.time()
