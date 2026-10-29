@@ -12,7 +12,7 @@ clock = alpacaPaperTrade.trading_client.get_clock()
 print("Market is open:", clock.is_open)
 
 
-if clock.is_open:
+if True:
     data = dataLoad.loadAndCleanData(
         symbol,
         timeframe=TimeFrame.Minute,
