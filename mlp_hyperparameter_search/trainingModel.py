@@ -72,7 +72,7 @@ def predict_latest(
         batch_size=batch_size,
         activation=activation,
         solver="adam",
-        max_iter=1000,
+        max_iter=300,
         random_state=42,
         early_stopping=True,
     )
