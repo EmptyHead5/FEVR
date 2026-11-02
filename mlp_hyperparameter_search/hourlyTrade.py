@@ -65,7 +65,7 @@ if clock.is_open:  # clock.is_open:
     print(f"Up probability: {prediction['probability']:.2%}")
     print(f"Threshold: {prediction['threshold']:.2%}")
 
-    sell_threshold = circleci.get_sell_threshold()
+    sell_threshold = circleci.main()
 
     # 5. Paper Trading
     start = time.time()
