@@ -30,6 +30,12 @@ jobs:
       - install-dependencies
 
       - run:
+          name: Fetch CircleCI trading history
+          command: |
+            cd mlp_hyperparameter_search
+            python -u circleci.py
+
+      - run:
           name: Run hyperparameter search
           command: |
             cd mlp_hyperparameter_search
