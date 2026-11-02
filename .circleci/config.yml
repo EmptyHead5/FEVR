@@ -37,6 +37,7 @@ jobs:
 
       - run:
           name: Run hyperparameter search
+          no_output_timeout: 30m
           command: |
             cd mlp_hyperparameter_search
             python -u mlpHyperparameterSearch.py
