@@ -5,6 +5,7 @@ from alpaca.data.timeframe import TimeFrame
 import alpacaPaperTrade
 import dataLoad
 import trainingModel
+import circleci
 
 
 symbol = "SPY"
@@ -64,6 +65,7 @@ if clock.is_open:  # clock.is_open:
     print(f"Up probability: {prediction['probability']:.2%}")
     print(f"Threshold: {prediction['threshold']:.2%}")
 
+    sell_threshold = circleci.get_sell_threshold()
 
     # 5. Paper Trading
     start = time.time()
@@ -73,6 +75,7 @@ if clock.is_open:  # clock.is_open:
         symbol=symbol,
         predicted_prob=prediction["probability"],
         threshold=prediction["threshold"],
+        sell_threshold=sell_threshold,
         dollar_amount=100,
         execute=True,
     )

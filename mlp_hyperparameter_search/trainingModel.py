@@ -26,6 +26,8 @@ def calculateRSI(close_prices, period=14):
 
     return rsi.fillna(50)
 
+import time
+
 def predict_latest(
     data,
     hidden_layer_sizes=(64, 32),
@@ -35,6 +37,8 @@ def predict_latest(
     activation="relu",
     threshold=0.5,
 ):
+    total_start = time.time()
+
     data = data.copy()
 
     feature_cols = [
@@ -51,6 +55,9 @@ def predict_latest(
         "RSI",
     ]
 
+    # Prepare data
+    start = time.time()
+
     latest_data = data.dropna(subset=feature_cols).iloc[[-1]]
 
     training_data = data.dropna(
@@ -61,10 +68,21 @@ def predict_latest(
     y_train = training_data["Target"].astype(int)
     X_latest = latest_data[feature_cols]
 
+    print("Training rows:", len(X_train), flush=True)
+    print("Training shape:", X_train.shape, flush=True)
+    print(f"Data preparation: {time.time() - start:.2f}s", flush=True)
+
+    # Scaling
+    start = time.time()
+    print("Starting scaling...", flush=True)
+
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     X_latest_scaled = scaler.transform(X_latest)
 
+    print(f"Scaling completed: {time.time() - start:.2f}s", flush=True)
+
+    # Create model
     model = MLPClassifier(
         hidden_layer_sizes=hidden_layer_sizes,
         learning_rate_init=learning_rate_init,
@@ -77,9 +95,33 @@ def predict_latest(
         early_stopping=True,
     )
 
+    print("MLP parameters:", flush=True)
+    print("Hidden layers:", hidden_layer_sizes, flush=True)
+    print("Learning rate:", learning_rate_init, flush=True)
+    print("Alpha:", alpha, flush=True)
+    print("Batch size:", batch_size, flush=True)
+
+    # Train model
+    start = time.time()
+    print("Starting MLP model.fit()...", flush=True)
+
     model.fit(X_train_scaled, y_train)
 
+    print(f"MLP model.fit completed: {time.time() - start:.2f}s", flush=True)
+    print("Training iterations:", model.n_iter_, flush=True)
+
+    # Prediction
+    start = time.time()
+    print("Starting predict_proba()...", flush=True)
+
     probability = model.predict_proba(X_latest_scaled)[0, 1]
+
+    print(f"predict_proba completed: {time.time() - start:.2f}s", flush=True)
+
+    print(
+        f"Total predict_latest time: {time.time() - total_start:.2f}s",
+        flush=True
+    )
 
     return {
         "data_time": latest_data.index[-1],
