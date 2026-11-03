@@ -106,6 +106,8 @@ def main():
         pipline_id = pipeline.get("id")
         tradingWorkflow = None
         workflows = getPipelineWorkflows(pipline_id)
+        if not workflows:
+            continue
 
         for workflow in workflows:
             if workflow.get("name") == "hourly-paper-trading":
