@@ -50,10 +50,20 @@ def getAllPipelines():
 
 def getPipelineWorkflows(pipeline_id):
     url = f"https://circleci.com/api/v2/pipeline/{pipeline_id}/workflow"
-    response = requests.get(url, headers=headers, timeout=10)
+
+    response = requests.get(
+        url,
+        headers=headers,
+        timeout=10
+    )
+
+    if response.status_code == 404:
+        print(f"Pipeline {pipeline_id}: workflow not found, skipping")
+        return []
+
     response.raise_for_status()
-    data = response.json()
-    return data.get("items", [])
+
+    return response.json().get("items", [])
 
 
 def getPiplineJob(workflow_id):
