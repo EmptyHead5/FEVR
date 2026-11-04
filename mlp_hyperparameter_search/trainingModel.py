@@ -63,6 +63,7 @@ def predict_latest(
     training_data = data.dropna(
         subset=feature_cols + ["Target"]
     ).copy()
+    training_data = training_data.tail(100000)
 
     X_train = training_data[feature_cols]
     y_train = training_data["Target"].astype(int)
