@@ -1,0 +1,290 @@
+{
+    "all_commit_details": [
+        {
+            "author_date": "2026-10-29T01:20:54.000Z",
+            "author_email": "changzenan857@gmail.com",
+            "author_login": "EmptyHead5",
+            "author_name": "Zenan Chang",
+            "body": "",
+            "branch": "main",
+            "commit": "96b5c25ab7bef050aa8b4f734ab0fbfa104e1c63",
+            "commit_url": "https://github.com/EmptyHead5/FEVR/commit/96b5c25ab7bef050aa8b4f734ab0fbfa104e1c63",
+            "committer_date": "2026-10-29T01:20:54.000Z",
+            "committer_email": "noreply@github.com",
+            "committer_login": "web-flow",
+            "committer_name": "GitHub",
+            "subject": "Update hourlyTrade.py"
+        }
+    ],
+    "all_commit_details_truncated": false,
+    "author_date": "2026-10-29T01:20:54.000Z",
+    "author_email": "changzenan857@gmail.com",
+    "author_name": "Zenan Chang",
+    "body": "",
+    "branch": "main",
+    "build_num": 537,
+    "build_parameters": {},
+    "build_time_millis": 41325,
+    "build_url": "https://circleci.com/gh/EmptyHead5/FEVR/537",
+    "canceled": false,
+    "canceler": null,
+    "circle_yml": {
+        "string": "version: 2\njobs:\n  hourly-paper-trading:\n    docker:\n    - image: cimg/python:3.12\n    working_directory: ~/project\n    steps:\n    - checkout\n    - run:\n        name: Install dependencies\n        command: |\n          pip install pandas numpy scipy statsmodels scikit-learn python-dotenv alpaca-py\n    - restore_cache:\n        name: Restore best parameters\n        keys:\n        - mlp-hourly-results-v1-\n    - run:\n        name: Run hourly prediction and paper trading\n        command: |\n          cd mlp_hyperparameter_search\n          python -u hourlyTrade.py\nworkflows:\n  hourly-paper-trading:\n    jobs:\n    - hourly-paper-trading\n  version: 2\n"
+    },
+    "committer_date": "2026-10-29T01:20:54.000Z",
+    "committer_email": "noreply@github.com",
+    "committer_name": "GitHub",
+    "compare": null,
+    "context_ids": [],
+    "dont_build": null,
+    "fail_reason": null,
+    "failed": false,
+    "infrastructure_fail": false,
+    "is_first_green_build": false,
+    "job_name": null,
+    "lifecycle": "finished",
+    "messages": [],
+    "node": null,
+    "oss": true,
+    "outcome": "success",
+    "owners": [],
+    "parallel": 1,
+    "picard": {
+        "executor": "docker",
+        "resource_class": {
+            "class": "large",
+            "name": "Large",
+            "cpu": 4,
+            "ram": 8192
+        }
+    },
+    "platform": "2.0",
+    "previous": {
+        "build_num": 536,
+        "build_time_millis": 37128,
+        "status": "success"
+    },
+    "previous_successful_build": {
+        "build_num": 536,
+        "build_time_millis": 37128,
+        "status": "success"
+    },
+    "pull_requests": [],
+    "queued_at": "2026-10-29T21:57:57.682Z",
+    "reponame": "FEVR",
+    "retries": null,
+    "retry_of": null,
+    "ssh_disabled": false,
+    "ssh_users": [],
+    "start_time": "2026-10-29T21:57:59.126Z",
+    "status": "success",
+    "steps": [
+        {
+            "name": "Spin up environment",
+            "actions": [
+                {
+                    "index": 0,
+                    "step": 0,
+                    "allocation_id": "6ae3c165fa6ed01732711b10-0-build/ABCDEFGH",
+                    "name": "Spin up environment",
+                    "type": "test",
+                    "start_time": "2026-10-29T21:57:58.484Z",
+                    "truncated": false,
+                    "parallel": true,
+                    "bash_command": null,
+                    "background": false,
+                    "insignificant": false,
+                    "has_output": true,
+                    "continue": null,
+                    "end_time": "2026-10-29T21:58:00.325Z",
+                    "exit_code": null,
+                    "run_time_millis": 1841,
+                    "output_url": "https://circleci.com/api/private/output/presigned/67fdc3e1-523e-462e-8589-710b9ba3e812/0/0?token=eyJhbGciOiJFUzI1NiIsImtpZCI6InRhc2tzLW91dHB1dC1qd3QtdjEiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE3OTMzMzI1NjMsImlzcyI6ImNpcmNsZWNpLmNvbSIsInN1YiI6IjY3ZmRjM2UxLTUyM2UtNDYyZS04NTg5LTcxMGI5YmEzZTgxMiJ9.cIDNicVVgI33FbUdGJRbV6Wxm0st7SaHadIC54e1KC_MdJ1vlOvJ7t4RC0hr1fxUU-itmT5bHFuUO9Peum1Zuw",
+                    "status": "success",
+                    "failed": null,
+                    "infrastructure_fail": null,
+                    "timedout": null,
+                    "canceled": null
+                }
+            ]
+        },
+        {
+            "name": "Preparing environment variables",
+            "actions": [
+                {
+                    "index": 0,
+                    "step": 99,
+                    "allocation_id": "6ae3c165fa6ed01732711b10-0-build/ABCDEFGH",
+                    "name": "Preparing environment variables",
+                    "type": "test",
+                    "start_time": "2026-10-29T21:58:00.567Z",
+                    "truncated": false,
+                    "parallel": true,
+                    "bash_command": null,
+                    "background": false,
+                    "insignificant": false,
+                    "has_output": true,
+                    "continue": null,
+                    "end_time": "2026-10-29T21:58:00.583Z",
+                    "exit_code": null,
+                    "run_time_millis": 16,
+                    "output_url": "https://circleci.com/api/private/output/presigned/67fdc3e1-523e-462e-8589-710b9ba3e812/0/99?token=eyJhbGciOiJFUzI1NiIsImtpZCI6InRhc2tzLW91dHB1dC1qd3QtdjEiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE3OTMzMzI1NjMsImlzcyI6ImNpcmNsZWNpLmNvbSIsInN1YiI6IjY3ZmRjM2UxLTUyM2UtNDYyZS04NTg5LTcxMGI5YmEzZTgxMiJ9.cIDNicVVgI33FbUdGJRbV6Wxm0st7SaHadIC54e1KC_MdJ1vlOvJ7t4RC0hr1fxUU-itmT5bHFuUO9Peum1Zuw",
+                    "status": "success",
+                    "failed": null,
+                    "infrastructure_fail": null,
+                    "timedout": null,
+                    "canceled": null
+                }
+            ]
+        },
+        {
+            "name": "Checkout code",
+            "actions": [
+                {
+                    "index": 0,
+                    "step": 101,
+                    "allocation_id": "6ae3c165fa6ed01732711b10-0-build/ABCDEFGH",
+                    "name": "Checkout code",
+                    "type": "test",
+                    "start_time": "2026-10-29T21:58:00.688Z",
+                    "truncated": false,
+                    "parallel": true,
+                    "bash_command": null,
+                    "background": false,
+                    "insignificant": false,
+                    "has_output": true,
+                    "continue": null,
+                    "end_time": "2026-10-29T21:58:01.325Z",
+                    "exit_code": null,
+                    "run_time_millis": 637,
+                    "output_url": "https://circleci.com/api/private/output/presigned/67fdc3e1-523e-462e-8589-710b9ba3e812/0/101?token=eyJhbGciOiJFUzI1NiIsImtpZCI6InRhc2tzLW91dHB1dC1qd3QtdjEiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE3OTMzMzI1NjMsImlzcyI6ImNpcmNsZWNpLmNvbSIsInN1YiI6IjY3ZmRjM2UxLTUyM2UtNDYyZS04NTg5LTcxMGI5YmEzZTgxMiJ9.cIDNicVVgI33FbUdGJRbV6Wxm0st7SaHadIC54e1KC_MdJ1vlOvJ7t4RC0hr1fxUU-itmT5bHFuUO9Peum1Zuw",
+                    "status": "success",
+                    "failed": null,
+                    "infrastructure_fail": null,
+                    "timedout": null,
+                    "canceled": null
+                }
+            ]
+        },
+        {
+            "name": "Install dependencies",
+            "actions": [
+                {
+                    "index": 0,
+                    "step": 102,
+                    "allocation_id": "6ae3c165fa6ed01732711b10-0-build/ABCDEFGH",
+                    "name": "Install dependencies",
+                    "type": "test",
+                    "start_time": "2026-10-29T21:58:01.396Z",
+                    "truncated": false,
+                    "parallel": true,
+                    "bash_command": "#!/bin/bash -eo pipefail\npip install pandas numpy scipy statsmodels scikit-learn python-dotenv alpaca-py\n",
+                    "background": false,
+                    "insignificant": false,
+                    "has_output": true,
+                    "continue": null,
+                    "end_time": "2026-10-29T21:58:37.085Z",
+                    "exit_code": 0,
+                    "run_time_millis": 35689,
+                    "output_url": "https://circleci.com/api/private/output/presigned/67fdc3e1-523e-462e-8589-710b9ba3e812/0/102?token=eyJhbGciOiJFUzI1NiIsImtpZCI6InRhc2tzLW91dHB1dC1qd3QtdjEiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE3OTMzMzI1NjMsImlzcyI6ImNpcmNsZWNpLmNvbSIsInN1YiI6IjY3ZmRjM2UxLTUyM2UtNDYyZS04NTg5LTcxMGI5YmEzZTgxMiJ9.cIDNicVVgI33FbUdGJRbV6Wxm0st7SaHadIC54e1KC_MdJ1vlOvJ7t4RC0hr1fxUU-itmT5bHFuUO9Peum1Zuw",
+                    "status": "success",
+                    "failed": null,
+                    "infrastructure_fail": null,
+                    "timedout": null,
+                    "canceled": null
+                }
+            ]
+        },
+        {
+            "name": "Restore best parameters",
+            "actions": [
+                {
+                    "index": 0,
+                    "step": 103,
+                    "allocation_id": "6ae3c165fa6ed01732711b10-0-build/ABCDEFGH",
+                    "name": "Restore best parameters",
+                    "type": "test",
+                    "start_time": "2026-10-29T21:58:37.137Z",
+                    "truncated": false,
+                    "parallel": true,
+                    "bash_command": null,
+                    "background": false,
+                    "insignificant": false,
+                    "has_output": true,
+                    "continue": null,
+                    "end_time": "2026-10-29T21:58:37.43Z",
+                    "exit_code": null,
+                    "run_time_millis": 293,
+                    "output_url": "https://circleci.com/api/private/output/presigned/67fdc3e1-523e-462e-8589-710b9ba3e812/0/103?token=eyJhbGciOiJFUzI1NiIsImtpZCI6InRhc2tzLW91dHB1dC1qd3QtdjEiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE3OTMzMzI1NjMsImlzcyI6ImNpcmNsZWNpLmNvbSIsInN1YiI6IjY3ZmRjM2UxLTUyM2UtNDYyZS04NTg5LTcxMGI5YmEzZTgxMiJ9.cIDNicVVgI33FbUdGJRbV6Wxm0st7SaHadIC54e1KC_MdJ1vlOvJ7t4RC0hr1fxUU-itmT5bHFuUO9Peum1Zuw",
+                    "status": "success",
+                    "failed": null,
+                    "infrastructure_fail": null,
+                    "timedout": null,
+                    "canceled": null
+                }
+            ]
+        },
+        {
+            "name": "Run hourly prediction and paper trading",
+            "actions": [
+                {
+                    "index": 0,
+                    "step": 104,
+                    "allocation_id": "6ae3c165fa6ed01732711b10-0-build/ABCDEFGH",
+                    "name": "Run hourly prediction and paper trading",
+                    "type": "test",
+                    "start_time": "2026-10-29T21:58:37.506Z",
+                    "truncated": false,
+                    "parallel": true,
+                    "bash_command": "#!/bin/bash -eo pipefail\ncd mlp_hyperparameter_search\npython -u hourlyTrade.py\n",
+                    "background": false,
+                    "insignificant": false,
+                    "has_output": true,
+                    "continue": null,
+                    "end_time": "2026-10-29T21:58:40.227Z",
+                    "exit_code": 0,
+                    "run_time_millis": 2721,
+                    "output_url": "https://circleci.com/api/private/output/presigned/67fdc3e1-523e-462e-8589-710b9ba3e812/0/104?token=eyJhbGciOiJFUzI1NiIsImtpZCI6InRhc2tzLW91dHB1dC1qd3QtdjEiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE3OTMzMzI1NjMsImlzcyI6ImNpcmNsZWNpLmNvbSIsInN1YiI6IjY3ZmRjM2UxLTUyM2UtNDYyZS04NTg5LTcxMGI5YmEzZTgxMiJ9.cIDNicVVgI33FbUdGJRbV6Wxm0st7SaHadIC54e1KC_MdJ1vlOvJ7t4RC0hr1fxUU-itmT5bHFuUO9Peum1Zuw",
+                    "status": "success",
+                    "failed": null,
+                    "infrastructure_fail": null,
+                    "timedout": null,
+                    "canceled": null
+                }
+            ]
+        }
+    ],
+    "stop_time": "2026-10-29T21:58:40.452Z",
+    "subject": "Update hourlyTrade.py",
+    "timedout": false,
+    "usage_queued_at": "2026-10-29T21:57:57.493Z",
+    "user": {
+        "is_user": false,
+        "login": "none"
+    },
+    "username": "EmptyHead5",
+    "vcs_revision": "96b5c25ab7bef050aa8b4f734ab0fbfa104e1c63",
+    "vcs_tag": null,
+    "vcs_type": "github",
+    "vcs_url": "https://github.com/EmptyHead5/FEVR",
+    "why": "github",
+    "workflows": {
+        "job_id": "67fdc3e1-523e-462e-8589-710b9ba3e812",
+        "job_name": "hourly-paper-trading",
+        "upstream_concurrency_map": {},
+        "upstream_job_ids": [],
+        "workflow_id": "8f3904d5-f935-439b-8f8c-d8fb866f0e03",
+        "workflow_name": "hourly-paper-trading",
+        "workspace_id": "8f3904d5-f935-439b-8f8c-d8fb866f0e03"
+    }
+}
+
+
+[
+    {
+        "message": "API key loaded: True\r\nSecret key loaded: True\r\nENV path: None\r\nMarket is open: True\r\nLoading minute data...\r\nAvailable symbols: ['SPY']\r\nMarket data loaded: 338.61s\r\nCreating features...\r\nFeatures completed: 0.15s\r\nLoading best parameters...\r\nBest parameters: {'hidden_layer_sizes': (32, 16), 'learning_rate_init': 0.001, 'alpha': 0.01, 'batch_size': 64, 'activation': 'relu', 'threshold': 0.5}\r\nParameters loaded: 0.00s\r\nStarting prediction...\r\nPrediction completed: 159.07s\r\nPrediction result: {'data_time': Timestamp('2026-10-29 19:38:00+0000', tz='UTC'), 'probability': 0.49937160603018665, 'threshold': 0.5}\r\nLatest completed data time: 2026-10-29 19:38:00+00:00\r\nUp probability: 49.94%\r\nThreshold: 50.00%\r\nStarting Paper Trading...\r\nNo buy: probability 49.94% \u003c threshold 50.00%\r\nPaper Trading completed: 0.00s\r\n",
+        "time": "2026-10-29T19:46:54Z",
+        "type": "out",
+        "truncated": false
+    }
+]
