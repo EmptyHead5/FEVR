@@ -78,7 +78,13 @@ def trade_from_probability(
 ):
     buy = predicted_prob >= threshold
     sell = sell_threshold is not None and predicted_prob <= sell_threshold
+
     if buy:
+        print(
+            f"BUY {symbol}: "
+            f"probability {predicted_prob:.2%} >= "
+            f"buy threshold {threshold:.2%}"
+        )
 
         market_order_data = MarketOrderRequest(
             symbol=symbol,
@@ -92,25 +98,32 @@ def trade_from_probability(
             if execute
             else None
         )
+
         return market_order
+
     if sell:
         for position in trading_client.get_all_positions():
             if position.symbol == symbol and position.side == PositionSide.LONG:
-                print(f"Sell {symbol}: probability = {predicted_prob:.2%}")
+                print(
+                    f"SELL {symbol}: "
+                    f"probability {predicted_prob:.2%} <= "
+                    f"sell threshold {sell_threshold:.2%}"
+                )
 
                 if execute:
                     return trading_client.close_position(symbol)
 
         print(f"No position in {symbol}. Nothing to sell.")
         return None
-        print(
-    f"HOLD {symbol}: "
-    f"probability {predicted_prob:.2%}, "
-    f"sell threshold {sell_threshold:.2%}, "
-    f"buy threshold {threshold:.2%}"
-    )
-    return None
 
+    print(
+        f"HOLD {symbol}: "
+        f"probability {predicted_prob:.2%}, "
+        f"sell threshold {sell_threshold:.2%}, "
+        f"buy threshold {threshold:.2%}"
+    )
+
+    return None
 async def minute_bar_handler(bar):
     change = (bar.close - bar.open) / bar.open
 
