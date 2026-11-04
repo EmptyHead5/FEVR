@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 from pathlib import Path
 
-csv_folder = Path(__file__).resolve().parent / "csv"
+csv_folder = Path(__file__).resolve().parent / "csv for sell threshold"
 csv_folder.mkdir(exist_ok=True)
 csv_file = csv_folder / "circleci_hourly_trading_history.csv"
 
@@ -171,6 +171,7 @@ def main():
 
     history["data_time"] = pd.to_datetime(history["data_time"], utc=True)
     recent = history.sort_values("data_time", ascending=False).head(48)
+    print(f"Recent records: {len(recent)}", flush=True)
 
     if len(recent) < 48:
         raise ValueError("Not enough historical records (less than 48)")
