@@ -102,7 +102,13 @@ def trade_from_probability(
                     return trading_client.close_position(symbol)
 
         print(f"No position in {symbol}. Nothing to sell.")
-
+        return None
+        print(
+    f"HOLD {symbol}: "
+    f"probability {predicted_prob:.2%}, "
+    f"sell threshold {sell_threshold:.2%}, "
+    f"buy threshold {threshold:.2%}"
+    )
     return None
 
 async def minute_bar_handler(bar):
